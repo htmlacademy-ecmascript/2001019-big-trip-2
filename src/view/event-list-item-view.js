@@ -1,4 +1,4 @@
-import {createElement} from "../render";
+import {createElement} from '../render';
 function createEventListItem() {
   return `<li class="trip-events__item">
               <div class="event">

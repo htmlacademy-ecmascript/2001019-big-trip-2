@@ -6,15 +6,14 @@ import AddNewPointFormView from '../view/add-new-point-form-view.js';
 import EditPointFormView from '../view/edit-point-form-view.js';
 import {render} from '../render.js';
 
-
 const tripFiltersElement = document.querySelector('.trip-controls__filters');
 const tripEventsElement = document.querySelector('.trip-events');
-
 export default class EventPresenter {
   eventListComponent = new EventListView();
   constructor({eventContainer}) {
     this.eventContainer = eventContainer;
   }
+
   init() {
     render(new TripFilterView(), tripFiltersElement);
     render(new TripSortView(), tripEventsElement);
