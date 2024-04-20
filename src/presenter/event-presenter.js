@@ -10,6 +10,7 @@ export default class EventPresenter {
   constructor(siteMainElement) {
     this.siteMainElement = siteMainElement;
   }
+
   init() {
     render(new TripFilterView(), this.siteMainElement.querySelector('.trip-controls__filters'));
     render(new TripSortView(), this.siteMainElement.querySelector('.trip-events__trip-sort-container'));
