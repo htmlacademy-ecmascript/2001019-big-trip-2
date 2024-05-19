@@ -1,52 +1,88 @@
 import {createElement} from '../render.js';
-import {getRandomDestination, mockDestinations} from '../mock/destinations.js';
-import {getEventTypes, getRandomEventType} from '../const.js';
-import {getAvailableOffers} from '../mock/offers.js';
+import {getDestinationById, mockDestinations} from '../mock/destinations.js';
+import {EVENT_TYPES} from '../const.js';
+import {getAvailableOffers} from '../model/offers-model.js';
 
-function createAddNewPointFormTemplate(point) {
-  const {offers, type} = point;
-  const destinationItem = getRandomDestination();
-  const typeItem = getRandomEventType();
-  let destinationsBlock = '';
-  let photosBlock = '';
-  let eventTypesBlock = '';
-  let offersBlock = '';
-  const eventTypes = getEventTypes();
+const DEFAULT_POINT = {
+  id: '27f76798-a449-473a-91a9-23cb4211a177',
+  basePrice: 0,
+  dateFrom: '2024-05-17T16:33:06.165Z',
+  dateTo: '2024-05-18T15:44:06.165Z',
+  destination: '40790a4f-e69a-425d-b9d7-bf3e31993508',
+  isFavorite: true,
+  offers: [
+    '17cadf51-69ee-4efc-a4bf-961d19f54a74'
+  ],
+  type: 'drive'
+};
 
+const destinationItem = getDestinationById(DEFAULT_POINT.destination);
+const pointType = EVENT_TYPES.find((typeItem) => typeItem.name === DEFAULT_POINT.type);
 
-  for (const destinationPhoto of destinationItem.pictures) {
-    photosBlock += `
+function createPhotosTemplate() {
+  return (
+    `${destinationItem.pictures.map((destinationPhoto) => (`
       <img class="event__photo" src="${destinationPhoto.src}" alt="Event photo">
-    `;
-  }
+    `)).join('')}`
+  );
+}
 
-  for (const destItem of mockDestinations) {
-    destinationsBlock += `<option value="${destItem.name}"></option>`;
-  }
+function createDestinationsTemplate() {
+  return (
+    `${mockDestinations.map((destItem) => (`
+        <option value="${destItem.name}"></option>
+    `)).join('')}`
+  );
+}
 
-  for (const eventType of eventTypes) {
-    eventTypesBlock += `
-    <div class="event__type-item">
-     <input id="event-type-${eventType.name}-1" class="event__type-input  visually-hidden" type="radio"
-     name="event-type" value="${eventType.name}" ${eventType.name === typeItem.name ? 'checked' : ''}>
-     <label class="event__type-label  event__type-label--${eventType.name}" for="event-type-${eventType.name}-1">${eventType.title}</label>
-    </div>
-    `;
-  }
+function createEventTypesTemplate() {
+  return (
+    `${EVENT_TYPES.map((eventType) => (`
+      <div class="event__type-item"> <input
+        id="event-type-${eventType.name}-1"
+        class="event__type-input  visually-hidden"
+        type="radio"
+        name="event-type"
+        value="${eventType.name}"
+        ${eventType.name === pointType.name ? 'checked' : ''}
+        >
+        <label class="event__type-label  event__type-label--${eventType.name}"
+          for="event-type-${eventType.name}-1">
+          ${eventType.title}
+        </label>
+      </div>
+  `)).join('')}`
+  );
+}
 
-  for (const offerItem of getAvailableOffers(type)) {
-    offersBlock += `
-    <div class="event__offer-selector">
-     <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="${offerItem.id}"
-     ${offers.includes(offerItem.id) ? 'checked' : ''}>
-     <label class="event__offer-label" for="${offerItem.id}">
-      <span class="event__offer-title">${offerItem.title}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offerItem.price}</span>
-     </label>
-    </div>
-    `;
-  }
+function createOffersTemplate() {
+  return (
+    `${getAvailableOffers(DEFAULT_POINT.type).map((offerItem) => (`
+      <div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden"
+        id="event-offer-comfort-1"
+        type="checkbox"
+        name="${offerItem.id}"
+        ${DEFAULT_POINT.offers.includes(offerItem.id) ? 'checked' : ''}>
+        <label class="event__offer-label"
+        for="${offerItem.id}">
+        <span class="event__offer-title">
+          ${offerItem.title}
+        </span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">
+          ${offerItem.price}
+        </span>
+        </label>
+      </div>
+    `)).join('')}`
+  );
+}
+function createAddNewPointFormTemplate() {
+  const photosTemplate = createPhotosTemplate();
+  const eventTypesTemplate = createEventTypesTemplate();
+  const offersTemplate = createOffersTemplate();
+  const destinationsTemplate = createDestinationsTemplate();
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -54,26 +90,25 @@ function createAddNewPointFormTemplate(point) {
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
                       <span class="visually-hidden">Choose event type</span>
-                      <img class="event__type-icon" width="17" height="17" src="img/icons/${typeItem.name}.png" alt="Event type icon">
+                      <img class="event__type-icon" width="17" height="17" src="img/icons/${pointType.name}.png" alt="Event type icon">
                     </label>
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-
-                        ${eventTypesBlock}
+                        ${eventTypesTemplate}
                       </fieldset>
                     </div>
                   </div>
 
                   <div class="event__field-group  event__field-group--destination">
                     <label class="event__label  event__type-output" for="event-destination-1">
-                      ${typeItem.name}
+                      ${pointType.name}
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationItem.name}" list="destination-list-1">
                     <datalist id="destination-list-1">
-                      ${destinationsBlock}
+                      ${destinationsTemplate}
                     </datalist>
                   </div>
 
@@ -101,7 +136,7 @@ function createAddNewPointFormTemplate(point) {
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
                     <div class="event__available-offers">
-                      ${offersBlock}
+                      ${offersTemplate}
                     </div>
                   </section>
 
@@ -111,7 +146,7 @@ function createAddNewPointFormTemplate(point) {
 
                     <div class="event__photos-container">
                       <div class="event__photos-tape">
-                        ${photosBlock}
+                        ${photosTemplate}
                       </div>
                     </div>
                   </section>
@@ -122,15 +157,12 @@ function createAddNewPointFormTemplate(point) {
 
 export default class AddNewPointFormView {
 
-  // constructor({destination}) {
-  //   this.destination = destination;
-  // }
   constructor({destination}) {
     this.destination = destination;
   }
 
   getTemplate() {
-    return createAddNewPointFormTemplate(this.destination);
+    return createAddNewPointFormTemplate();
   }
 
   getElement() {

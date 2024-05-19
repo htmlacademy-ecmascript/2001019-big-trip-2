@@ -1,50 +1,10 @@
 import {createElement} from '../render.js';
 import {getDestinationById, mockDestinations} from '../mock/destinations.js';
-import {getEventTypes} from '../const.js';
-import {getAvailableOffers} from '../mock/offers.js';
+import {EVENT_TYPES} from '../const.js';
+import {getAvailableOffers} from '../model/offers-model.js';
 function createEditPointForm(point) {
-  const {destination, offers, type} = point;
-  const destinationItem = getDestinationById(destination);
 
-  let eventTypesBlock = '';
-  let destinationsBlock = '';
-  let offersBlock = '';
-
-  const eventTypes = getEventTypes();
-  let currentEventType;
-
-
-  for (const eventType of eventTypes) {
-    eventTypesBlock += `
-    <div class="event__type-item">
-     <input id="event-type-${eventType.name}-1" class="event__type-input  visually-hidden" type="radio"
-     name="event-type" value="${eventType.name}" ${eventType.name === type ? 'checked' : ''}>
-     <label class="event__type-label  event__type-label--${eventType.name}" for="event-type-${eventType.name}-1">${eventType.title}</label>
-    </div>
-    `;
-
-    if (eventType.name === type) {
-      currentEventType = eventType;
-    }
-  }
-
-  for (const destItem of mockDestinations) {
-    destinationsBlock += `<option value="${destItem.name}"></option>`;
-  }
-
-  for (const offerItem of getAvailableOffers(type)) {
-    offersBlock += `
-    <div class="event__offer-selector">
-     <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="${offerItem.id}"
-     ${offers.includes(offerItem.id) ? 'checked' : ''}>
-     <label class="event__offer-label" for="${offerItem.id}">
-      <span class="event__offer-title">${offerItem.title}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offerItem.price}</span>
-     </label>
-    </div>
-    `;
-  }
+  const offerItems = getAvailableOffers(point.type);
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -52,25 +12,36 @@ function createEditPointForm(point) {
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
                       <span class="visually-hidden">Choose event type</span>
-                      <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+                      <img class="event__type-icon" width="17" height="17" src="img/icons/${point.type}.png" alt="Event type icon">
                     </label>
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                        ${eventTypesBlock}
+                        ${EVENT_TYPES.map((eventType) => (`
+                          <div class="event__type-item">
+                            <input id="event-type-${eventType.name}-1" class="event__type-input  visually-hidden" type="radio"
+                            name="event-type" value="${eventType.name}" ${eventType.name === point.type ? 'checked' : ''}>
+                            <label class="event__type-label  event__type-label--${eventType.name}" for="event-type-${eventType.name}-1">${eventType.title}</label>
+                            </div>
+                        `)).join('')}
                       </fieldset>
                     </div>
                   </div>
 
                   <div class="event__field-group  event__field-group--destination">
+                  ${EVENT_TYPES.map((eventType) => (`
                     <label class="event__label  event__type-output" for="event-destination-1">
-                      ${currentEventType.title}
+                      ${eventType.name === point.type ? eventType.name : ''}
+
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationItem.name}" list="destination-list-1">
+                  `)).join('')}
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${getDestinationById(point.destination).name}" list="destination-list-1">
                     <datalist id="destination-list-1">
-                      ${destinationsBlock}
+                    ${mockDestinations.map((destItem) => (`
+                      <option value="${destItem.name}"></option>
+                    `)).join('')}
                     </datalist>
                   </div>
 
@@ -98,17 +69,26 @@ function createEditPointForm(point) {
                 </header>
                 <section class="event__details">
                   <section class="event__section  event__section--offers">
-                    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-                    <div class="event__available-offers">
-                        ${offersBlock}
-                    </div>
-                  </section>
-
-                  <section class="event__section  event__section--destination">
-                    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${destinationItem.description}</p>
-                  </section>
+                  <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+                  <div class="event__available-offers">
+                    ${offerItems.map((offerItem) => (`
+                      <div class="event__offer-selector">
+                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="${offerItem.id}"
+                        ${point.offers.includes(offerItem.id) ? 'checked' : ''}>
+                        <label class="event__offer-label" for="${offerItem.id}">
+                          <span class="event__offer-title">${offerItem.title}</span>
+                          &plus;&euro;&nbsp;
+                          <span class="event__offer-price">${offerItem.price}</span>
+                        </label>
+                      </div>
+                    `)).join('')}
+                  </div>
                 </section>
+                <section class="event__section  event__section--destination">
+                  <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+                  <p class="event__destination-description">${getDestinationById(point.destination).description}</p>
+                </section>
+              </section>
               </form>
             </li>`;
 }

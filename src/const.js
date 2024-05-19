@@ -1,5 +1,3 @@
-import {getRandomArrayElement} from './utils.js';
-
 const EVENT_TYPES = [
   {
     name: 'taxi',
@@ -39,12 +37,4 @@ const EVENT_TYPES = [
   },
 ];
 
-function getEventTypes() {
-  return EVENT_TYPES;
-}
-
-function getRandomEventType() {
-  return getRandomArrayElement(EVENT_TYPES);
-}
-
-export {getEventTypes, getRandomEventType};
+export {EVENT_TYPES};
