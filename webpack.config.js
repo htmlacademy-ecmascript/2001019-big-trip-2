@@ -39,13 +39,4 @@ module.exports = {
       },
     ]
   },
-  // resolve: {
-  //   fallback: {
-  //     fs: false,
-  //     path: false,
-  //     util: false,
-  //     url: false,
-  //     assert: false
-  //   }
-  // }
 };

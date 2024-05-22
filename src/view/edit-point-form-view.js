@@ -34,7 +34,6 @@ function createEditPointForm(point) {
                   ${EVENT_TYPES.map((eventType) => (`
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${eventType.name === point.type ? eventType.name : ''}
-
                     </label>
                   `)).join('')}
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${getDestinationById(point.destination).name}" list="destination-list-1">

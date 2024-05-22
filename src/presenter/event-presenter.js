@@ -7,15 +7,17 @@ import EditPointFormView from '../view/edit-point-form-view.js';
 import {render} from '../render.js';
 
 export default class EventPresenter {
-  constructor({siteMainElement, pointsModel, destinationModel}) {
+  constructor({siteMainElement, pointsModel, destinationModel, offersModel}) {
     this.siteMainElement = siteMainElement;
     this.pointsModel = pointsModel;
     this.destinationModel = destinationModel;
+    this.offersModel = offersModel;
   }
 
   init() {
     this.points = [...this.pointsModel.getPoints()];
     this.destination = [...this.destinationModel.getDestination()];
+    this.offers = [...this.offersModel.getOffers()];
 
     render(new TripFilterView(), this.siteMainElement.querySelector('.trip-controls__filters'));
     render(new TripSortView(), this.siteMainElement.querySelector('.trip-events__trip-sort-container'));
@@ -29,3 +31,5 @@ export default class EventPresenter {
     }
   }
 }
+
+

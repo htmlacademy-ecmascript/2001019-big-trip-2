@@ -19,70 +19,7 @@ const DEFAULT_POINT = {
 const destinationItem = getDestinationById(DEFAULT_POINT.destination);
 const pointType = EVENT_TYPES.find((typeItem) => typeItem.name === DEFAULT_POINT.type);
 
-function createPhotosTemplate() {
-  return (
-    `${destinationItem.pictures.map((destinationPhoto) => (`
-      <img class="event__photo" src="${destinationPhoto.src}" alt="Event photo">
-    `)).join('')}`
-  );
-}
-
-function createDestinationsTemplate() {
-  return (
-    `${mockDestinations.map((destItem) => (`
-        <option value="${destItem.name}"></option>
-    `)).join('')}`
-  );
-}
-
-function createEventTypesTemplate() {
-  return (
-    `${EVENT_TYPES.map((eventType) => (`
-      <div class="event__type-item"> <input
-        id="event-type-${eventType.name}-1"
-        class="event__type-input  visually-hidden"
-        type="radio"
-        name="event-type"
-        value="${eventType.name}"
-        ${eventType.name === pointType.name ? 'checked' : ''}
-        >
-        <label class="event__type-label  event__type-label--${eventType.name}"
-          for="event-type-${eventType.name}-1">
-          ${eventType.title}
-        </label>
-      </div>
-  `)).join('')}`
-  );
-}
-
-function createOffersTemplate() {
-  return (
-    `${getAvailableOffers(DEFAULT_POINT.type).map((offerItem) => (`
-      <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden"
-        id="event-offer-comfort-1"
-        type="checkbox"
-        name="${offerItem.id}"
-        ${DEFAULT_POINT.offers.includes(offerItem.id) ? 'checked' : ''}>
-        <label class="event__offer-label"
-        for="${offerItem.id}">
-        <span class="event__offer-title">
-          ${offerItem.title}
-        </span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">
-          ${offerItem.price}
-        </span>
-        </label>
-      </div>
-    `)).join('')}`
-  );
-}
 function createAddNewPointFormTemplate() {
-  const photosTemplate = createPhotosTemplate();
-  const eventTypesTemplate = createEventTypesTemplate();
-  const offersTemplate = createOffersTemplate();
-  const destinationsTemplate = createDestinationsTemplate();
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -93,11 +30,15 @@ function createAddNewPointFormTemplate() {
                       <img class="event__type-icon" width="17" height="17" src="img/icons/${pointType.name}.png" alt="Event type icon">
                     </label>
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                        ${eventTypesTemplate}
+                        ${EVENT_TYPES.map((eventType) => (`
+                          <div class="event__type-item"> <input id="event-type-${eventType.name}-1" class="event__type-input  visually-hidden"
+                          type="radio" name="event-type" value="${eventType.name}" ${eventType.name === pointType.name ? 'checked' : ''}>
+                            <label class="event__type-label  event__type-label--${eventType.name}" for="event-type-${eventType.name}-1"> ${eventType.title}</label>
+                          </div>
+                        `)).join('')}
                       </fieldset>
                     </div>
                   </div>
@@ -108,9 +49,10 @@ function createAddNewPointFormTemplate() {
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationItem.name}" list="destination-list-1">
                     <datalist id="destination-list-1">
-                      ${destinationsTemplate}
+                    ${mockDestinations.map((destItem) => (`
+                      <option value="${destItem.name}"></option>
+                    `)).join('')}
                     </datalist>
-                  </div>
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -119,7 +61,6 @@ function createAddNewPointFormTemplate() {
                     <label class="visually-hidden" for="event-end-time-1">To</label>
                     <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="19/03/19 00:00">
                   </div>
-
                   <div class="event__field-group  event__field-group--price">
                     <label class="event__label" for="event-price-1">
                       <span class="visually-hidden">Price</span>
@@ -127,26 +68,35 @@ function createAddNewPointFormTemplate() {
                     </label>
                     <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
                   </div>
-
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
                   <button class="event__reset-btn" type="reset">Cancel</button>
                 </header>
+
                 <section class="event__details">
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
                     <div class="event__available-offers">
-                      ${offersTemplate}
+                    ${getAvailableOffers(DEFAULT_POINT.type).map((offerItem) => (`
+                      <div class="event__offer-selector">
+                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="${offerItem.id}"
+                        ${DEFAULT_POINT.offers.includes(offerItem.id) ? 'checked' : ''}>
+                        <label class="event__offer-label" for="${offerItem.id}">
+                          <span class="event__offer-title">${offerItem.title}</span>&plus;&euro;&nbsp;
+                          <span class="event__offer-price">${offerItem.price}</span>
+                        </label>
+                      </div>
+                    `)).join('')}
                     </div>
                   </section>
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${destinationItem.description}</p>
-
                     <div class="event__photos-container">
                       <div class="event__photos-tape">
-                        ${photosTemplate}
+                      ${destinationItem.pictures.map((destinationPhoto) => (`
+                        <img class="event__photo" src="${destinationPhoto.src}" alt="Event photo">
+                      `)).join('')}
                       </div>
                     </div>
                   </section>

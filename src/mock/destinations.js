@@ -1,5 +1,3 @@
-import {getRandomArrayElement} from '../utils.js';
-
 export const mockDestinations = [
   {
     id: '40790a4f-e69a-425d-b9d7-bf3e31993508',
@@ -125,12 +123,8 @@ export const mockDestinations = [
   }
 ];
 
-function getRandomDestination() {
-  return getRandomArrayElement(mockDestinations);
-}
-
 function getDestinationById(id) {
   return mockDestinations.find((destItem) => destItem.id === id);
 }
 
-export {getRandomDestination, getDestinationById};
+export {getDestinationById};

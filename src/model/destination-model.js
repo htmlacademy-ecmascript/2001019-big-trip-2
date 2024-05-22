@@ -1,9 +1,7 @@
-import {getRandomDestination} from '../mock/destinations.js';
-
-const DESTINATION_COUNT = 1;
+import {mockDestinations} from '../mock/destinations.js';
 
 export default class DestinationModel {
-  destination = Array.from({length: DESTINATION_COUNT}, getRandomDestination);
+  destination = mockDestinations;
 
   getDestination() {
     return this.destination;

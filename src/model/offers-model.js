@@ -10,11 +10,11 @@ function getAvailableOffers(type) {
   return offerItems.offers;
 }
 export default class OffersModel {
-  //offers = getOffers();
+  offers = mockOffers;
 
-  // getOffers() {
-  //   return this.offers;
-  // }
+  getOffers() {
+    return this.offers;
+  }
 }
 
 export {getAvailableOffers};
