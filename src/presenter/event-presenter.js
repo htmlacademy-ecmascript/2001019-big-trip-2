@@ -4,25 +4,31 @@ import EventListItemView from '../view/event-list-item-view.js';
 import AddNewPointFormView from '../view/add-new-point-form-view.js';
 import EditPointFormView from '../view/edit-point-form-view.js';
 
-import {render} from '../render.js';
+//import {render} from '../render.js';
+import {render} from '../framework/render';
 
 export default class EventPresenter {
+  #siteMainElement = null;
+  #pointsModel = null;
+  #destinationModel = null;
+  #offersModel = null;
+
   constructor({siteMainElement, pointsModel, destinationModel, offersModel}) {
-    this.siteMainElement = siteMainElement;
-    this.pointsModel = pointsModel;
-    this.destinationModel = destinationModel;
-    this.offersModel = offersModel;
+    this.#siteMainElement = siteMainElement;
+    this.#pointsModel = pointsModel;
+    this.#destinationModel = destinationModel;
+    this.#offersModel = offersModel;
   }
 
   init() {
-    this.points = [...this.pointsModel.getPoints()];
-    this.destination = [...this.destinationModel.getDestination()];
-    this.offers = [...this.offersModel.getOffers()];
+    this.points = [...this.#pointsModel.getPoints()];
+    this.destination = [...this.#destinationModel.getDestination()];
+    this.offers = [...this.#offersModel.getOffers()];
 
-    render(new TripFilterView(), this.siteMainElement.querySelector('.trip-controls__filters'));
-    render(new TripSortView(), this.siteMainElement.querySelector('.trip-events__trip-sort-container'));
+    render(new TripFilterView(), this.#siteMainElement.querySelector('.trip-controls__filters'));
+    render(new TripSortView(), this.#siteMainElement.querySelector('.trip-events__trip-sort-container'));
 
-    const tripEventListElement = this.siteMainElement.querySelector('.trip-events__list');
+    const tripEventListElement = this.#siteMainElement.querySelector('.trip-events__list');
     render(new AddNewPointFormView({destination: this.destination}), tripEventListElement);
     render(new EditPointFormView({point: this.points[0]}), tripEventListElement);
 

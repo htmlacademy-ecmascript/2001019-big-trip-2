@@ -1,8 +1,8 @@
-import {createElement} from '../render';
 import {formatDuration, humanizeEventDate, humanizeEventTime} from '../utils.js';
 import dayjs from 'dayjs';
 import {getAvailableOffers} from '../model/offers-model.js';
 import {getDestinationById} from '../mock/destinations.js';
+import AbstractView from '../framework/view/abstract-view.js';
 function createEventListItem(point) {
 
   const offerItems = getAvailableOffers(point.type).filter((offer) => point.offers.includes(offer.id));
@@ -48,24 +48,13 @@ function createEventListItem(point) {
             </li>`;
 }
 
-export default class EventListItemView {
+export default class EventListItemView extends AbstractView {
   constructor({point}) {
+    super()
     this.point = point;
   }
 
-  getTemplate() {
+  get template() {
     return createEventListItem(this.point);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

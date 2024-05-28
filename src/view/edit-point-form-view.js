@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {getDestinationById, mockDestinations} from '../mock/destinations.js';
 import {EVENT_TYPES} from '../const.js';
 import {getAvailableOffers} from '../model/offers-model.js';
@@ -92,24 +92,12 @@ function createEditPointForm(point) {
             </li>`;
 }
 
-export default class EditPointFormView {
+export default class EditPointFormView extends AbstractView {
   constructor({point}) {
+    super()
     this.point = point;
   }
-
-  getTemplate() {
+  get template() {
     return createEditPointForm(this.point);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
