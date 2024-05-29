@@ -1,10 +1,10 @@
-import {createElement} from '../render';
 import {formatDuration, humanizeEventDate, humanizeEventTime} from '../utils.js';
 import dayjs from 'dayjs';
 import {getAvailableOffers} from '../model/offers-model.js';
 import {getDestinationById} from '../mock/destinations.js';
-function createEventListItem(point) {
-
+import AbstractView from '../framework/view/abstract-view.js';
+function createEventListItem({point}) {
+  //параметром вместо (point) добавила ({point})
   const offerItems = getAvailableOffers(point.type).filter((offer) => point.offers.includes(offer.id));
 
   return `<li class="trip-events__item">
@@ -48,24 +48,24 @@ function createEventListItem(point) {
             </li>`;
 }
 
-export default class EventListItemView {
-  constructor({point}) {
-    this.point = point;
+export default class EventListItemView extends AbstractView {
+  #point = null;
+  #handleEditClick = null;
+  constructor({point, onEditClick}) {
+    super();
+    this.#point = point;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate() {
-    return createEventListItem(this.point);
+  get template() {
+    return createEventListItem(this.#point);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }
