@@ -2,7 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 import {getDestinationById, mockDestinations} from '../mock/destinations.js';
 import {EVENT_TYPES} from '../const.js';
 import {getAvailableOffers} from '../model/offers-model.js';
-function createEditPointForm(point) {
+function createEditPointForm({point}) {
 
   const offerItems = getAvailableOffers(point.type);
 
@@ -57,7 +57,7 @@ function createEditPointForm(point) {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="160">
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.basePrice}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -93,11 +93,23 @@ function createEditPointForm(point) {
 }
 
 export default class EditPointFormView extends AbstractView {
-  constructor({point}) {
-    super()
-    this.point = point;
+  #point = null;
+  #handleEditClick = null;
+  constructor({point, onEditClick}) {
+    super();
+    this.#point = point;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event--edit')
+      .addEventListener('click', this.#editClickHandler);
   }
+
   get template() {
-    return createEditPointForm(this.point);
+    return createEditPointForm(this.#point);
   }
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

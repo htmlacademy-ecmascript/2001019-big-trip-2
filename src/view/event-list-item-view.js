@@ -3,8 +3,8 @@ import dayjs from 'dayjs';
 import {getAvailableOffers} from '../model/offers-model.js';
 import {getDestinationById} from '../mock/destinations.js';
 import AbstractView from '../framework/view/abstract-view.js';
-function createEventListItem(point) {
-
+function createEventListItem({point}) {
+  //параметром вместо (point) добавила ({point})
   const offerItems = getAvailableOffers(point.type).filter((offer) => point.offers.includes(offer.id));
 
   return `<li class="trip-events__item">
@@ -49,12 +49,23 @@ function createEventListItem(point) {
 }
 
 export default class EventListItemView extends AbstractView {
-  constructor({point}) {
-    super()
-    this.point = point;
+  #point = null;
+  #handleEditClick = null;
+  constructor({point, onEditClick}) {
+    super();
+    this.#point = point;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
-    return createEventListItem(this.point);
+    return createEventListItem(this.#point);
   }
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

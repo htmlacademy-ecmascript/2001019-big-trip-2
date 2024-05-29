@@ -1,23 +1,22 @@
+import {render, replace} from '../framework/render';
 import TripFilterView from '../view/trip-filter-view.js';
 import TripSortView from '../view/trip-sort-view.js';
 import EventListItemView from '../view/event-list-item-view.js';
-import AddNewPointFormView from '../view/add-new-point-form-view.js';
 import EditPointFormView from '../view/edit-point-form-view.js';
-
-//import {render} from '../render.js';
-import {render} from '../framework/render';
 
 export default class EventPresenter {
   #siteMainElement = null;
   #pointsModel = null;
   #destinationModel = null;
   #offersModel = null;
+  #tripEventListElement = null;
 
-  constructor({siteMainElement, pointsModel, destinationModel, offersModel}) {
+  constructor({siteMainElement, pointsModel, destinationModel, offersModel, tripEventListElement}) {
     this.#siteMainElement = siteMainElement;
     this.#pointsModel = pointsModel;
     this.#destinationModel = destinationModel;
     this.#offersModel = offersModel;
+    this.#tripEventListElement = tripEventListElement;
   }
 
   init() {
@@ -28,13 +27,43 @@ export default class EventPresenter {
     render(new TripFilterView(), this.#siteMainElement.querySelector('.trip-controls__filters'));
     render(new TripSortView(), this.#siteMainElement.querySelector('.trip-events__trip-sort-container'));
 
-    const tripEventListElement = this.#siteMainElement.querySelector('.trip-events__list');
-    render(new AddNewPointFormView({destination: this.destination}), tripEventListElement);
-    render(new EditPointFormView({point: this.points[0]}), tripEventListElement);
-
     for (let i = 0; i < this.points.length; i++) {
-      render(new EventListItemView({point: this.points[i]}), tripEventListElement);
+      this.#renderPoint({point: this.points[i]});
     }
+  }
+
+  #renderPoint(point) {
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceFormToPoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+    const pointComponent = new EventListItemView({
+      point,
+      onEditClick: () => {
+        replacePointToForm();
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
+    });
+    const pointEditComponent = new EditPointFormView({
+      point,
+      onEditClick: () => {
+        replaceFormToPoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    function replacePointToForm() {
+      replace(pointEditComponent, pointComponent);
+    }
+
+    function replaceFormToPoint() {
+      replace(pointComponent, pointEditComponent);
+    }
+
+    render(pointComponent, this.#tripEventListElement);
   }
 }
 
