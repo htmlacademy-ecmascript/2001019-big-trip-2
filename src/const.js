@@ -37,4 +37,18 @@ const EVENT_TYPES = [
   },
 ];
 
-export {EVENT_TYPES};
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
+const EmptyPointMessage = {
+  everything: 'Click New Event to create your first point',
+  past: 'There are no past events now',
+  present: 'There are no present events now',
+  future: 'There are no future events now',
+};
+
+export {EVENT_TYPES, FilterType, EmptyPointMessage};
