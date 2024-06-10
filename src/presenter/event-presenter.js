@@ -15,7 +15,7 @@ export default class EventPresenter {
   #destinationModel = null;
   #offersModel = null;
   #tripEventListElement = null;
-  #tripFilterViewComponent = null;
+  #tripFilterComponent = null;
   #pointComponents = [];
   #noPointComponent = null;
 
@@ -28,9 +28,9 @@ export default class EventPresenter {
   }
 
   init() {
-    this.points = [...this.#pointsModel.getPoints()];
-    this.destination = [...this.#destinationModel.getDestination()];
-    this.offers = [...this.#offersModel.getOffers()];
+    this.points = this.#pointsModel.getPoints();
+    this.destination = this.#destinationModel.getDestination();
+    this.offers = this.#offersModel.getOffers();
     const filters = generateFilter(this.points);
 
     render(new TripFilterView(filters, {onChange: this.#handleFilterChange}), this.#siteMainElement.querySelector('.trip-controls__filters'));
@@ -47,8 +47,6 @@ export default class EventPresenter {
     this.#pointComponents = [];
     const points = filter[filterType](this.points);
 
-    //if (filterType ===  'past') points = [];
-
     if (this.#noPointComponent) {
       remove(this.#noPointComponent);
     }
@@ -56,9 +54,7 @@ export default class EventPresenter {
     if (points.length > 0) {
       this.#renderPointsList(points);
     } else {
-      const noPointComponent = new NoPointView(filterType);
-      this.#noPointComponent = noPointComponent;
-      render(noPointComponent, this.#siteMainElement.querySelector('.trip-events'));
+      this.#renderNoPointComponent(filterType);
     }
   };
 
@@ -68,6 +64,12 @@ export default class EventPresenter {
 
       this.#pointComponents.push(pointComponent);
     }
+  }
+
+  #renderNoPointComponent(filterType) {
+    const noPointComponent = new NoPointView(filterType);
+    this.#noPointComponent = noPointComponent;
+    render(noPointComponent, this.#siteMainElement.querySelector('.trip-events'));
   }
 
   #renderPoint(point) {

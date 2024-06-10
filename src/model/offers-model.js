@@ -13,7 +13,7 @@ export default class OffersModel {
   #offers = mockOffers;
 
   getOffers() {
-    return this.#offers;
+    return [...this.#offers];
   }
 }
 
