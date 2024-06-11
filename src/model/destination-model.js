@@ -4,6 +4,6 @@ export default class DestinationModel {
   #destination = mockDestinations;
 
   getDestination() {
-    return this.#destination;
+    return [...this.#destination];
   }
 }
