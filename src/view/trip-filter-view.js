@@ -39,5 +39,6 @@ export default class TripFilterView extends AbstractView {
   #changeHandler = (evt) => {
     evt.preventDefault();
     this.#handleChange(evt.target.value);
+    //console.log(this.#handleChange(evt.target.value));
   };
 }
