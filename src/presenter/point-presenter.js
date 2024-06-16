@@ -1,4 +1,4 @@
-import {render, replace} from '../framework/render.js';
+import {remove, render, replace} from '../framework/render.js';
 import EventListItemView from "../view/event-list-item-view.js";
 import EditPointFormView from "../view/edit-point-form-view.js";
 
@@ -22,6 +22,9 @@ export default class PointPresenter {
   init(point) {
     this.#point = point;
 
+    const prevPointComponent = this.#pointComponent;
+    const prevPointEditComponent = this.#pointEditComponent;
+
     this.#pointComponent = new EventListItemView({
       point: this.#point,
       onEditClick: () => {
@@ -38,9 +41,28 @@ export default class PointPresenter {
       }
     });
 
-    render(this.#pointComponent, this.#tripEventListElement);
+    if (prevPointComponent === null || prevPointEditComponent === null) {
+      render(this.#pointComponent, this.#tripEventListElement);
+      return;
+    }
+
+    if (this.#tripEventListElement.contains(prevPointComponent.element)) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+
+    if (this.#tripEventListElement.contains(prevPointEditComponent.element)) {
+      replace(this.#pointEditComponent, prevPointEditComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevPointEditComponent);
 
     return this.#pointComponent;
+  }
+
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
   }
 
   #escKeyDownHandler = (evt) => {
