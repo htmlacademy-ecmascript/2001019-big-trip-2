@@ -6,13 +6,15 @@ export default class PointPresenter {
   #tripEventListElement = null;
 
   #pointComponent = null;
+  #handleDataChange = null;
   #pointEditComponent = null;
   #pointComponents = [];
 
   #point = null;
 
-  constructor({tripEventListElement}) {
+  constructor({tripEventListElement, onDataChange}) {
     this.#tripEventListElement = tripEventListElement;
+    this.#handleDataChange = onDataChange;
   }
 
   get point() {
@@ -21,16 +23,17 @@ export default class PointPresenter {
 
   init(point) {
     this.#point = point;
-
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new EventListItemView({
       point: this.#point,
+      onFavoriteClick: this.#handleFavoriteClick,
       onEditClick: () => {
         this.#replacePointToForm();
         document.addEventListener('keydown', this.#escKeyDownHandler);
       }
+
     });
 
     this.#pointEditComponent = new EditPointFormView({
@@ -79,5 +82,17 @@ export default class PointPresenter {
 
   #replaceFormToPoint() {
     replace(this.#pointComponent, this.#pointEditComponent);
+  }
+
+  #handleFavoriteClick = () => {
+    /*
+    В #handleDataChange передавался поинту уже деструктурированный,
+    а старая логика рассчитана на то, что в неё передайтся поинт внутри объекта,
+    В результате когда point перерисовывался, в объекте уже не было свойства point и всё ломалось
+     */
+
+    // Меняем значение isFavorite на противоположное
+    this.#point.point.isFavorite = !this.#point.point.isFavorite;
+    this.#handleDataChange(this.#point);
   }
 }
