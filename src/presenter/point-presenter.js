@@ -1,24 +1,33 @@
 import {remove, render, replace} from '../framework/render.js';
-import EventListItemView from "../view/event-list-item-view.js";
-import EditPointFormView from "../view/edit-point-form-view.js";
+import EventListItemView from '../view/event-list-item-view.js';
+import EditPointFormView from '../view/edit-point-form-view.js';
+
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
 
 export default class PointPresenter {
   #tripEventListElement = null;
 
   #pointComponent = null;
   #handleDataChange = null;
+  #handleModeChange = null;
+
   #pointEditComponent = null;
   #pointComponents = [];
 
   #point = null;
+  #mode = Mode.DEFAULT;
 
-  constructor({tripEventListElement, onDataChange}) {
+  constructor({tripEventListElement, onDataChange, onModeChange}) {
     this.#tripEventListElement = tripEventListElement;
     this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   get point() {
-    return this.#pointComponent
+    return this.#pointComponent;
   }
 
   init(point) {
@@ -49,11 +58,11 @@ export default class PointPresenter {
       return;
     }
 
-    if (this.#tripEventListElement.contains(prevPointComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    if (this.#tripEventListElement.contains(prevPointEditComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#pointEditComponent, prevPointEditComponent);
     }
 
@@ -61,6 +70,12 @@ export default class PointPresenter {
     remove(prevPointEditComponent);
 
     return this.#pointComponent;
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToPoint();
+    }
   }
 
   destroy() {
@@ -78,21 +93,24 @@ export default class PointPresenter {
 
   #replacePointToForm() {
     replace(this.#pointEditComponent, this.#pointComponent);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
   }
 
   #replaceFormToPoint() {
     replace(this.#pointComponent, this.#pointEditComponent);
+    this.#mode = Mode.DEFAULT;
   }
 
   #handleFavoriteClick = () => {
     /*
-    В #handleDataChange передавался поинту уже деструктурированный,
-    а старая логика рассчитана на то, что в неё передайтся поинт внутри объекта,
+    здесь передавался поинт уже деструктурированный,
+    а старая логика рассчитана на то, что в неё передается поинт внутри объекта,
     В результате когда point перерисовывался, в объекте уже не было свойства point и всё ломалось
      */
 
     // Меняем значение isFavorite на противоположное
     this.#point.point.isFavorite = !this.#point.point.isFavorite;
     this.#handleDataChange(this.#point);
-  }
+  };
 }
