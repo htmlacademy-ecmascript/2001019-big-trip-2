@@ -34,4 +34,8 @@ function formatDuration(durationMinutes) {
   return `${days}${hours}${minutes}`;
 }
 
-export {getRandomArrayElement, humanizeEventDate, humanizeEventTime, formatDuration};
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
+export {getRandomArrayElement, humanizeEventDate, humanizeEventTime, formatDuration, updateItem};
