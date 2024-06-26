@@ -41,7 +41,7 @@ export default class EventPresenter {
     this.#filterComponent = new TripFilterView(filters, {onChange: this.#handleFilterChange});
     this.#sourcedEventPoints = [...this.points];
     this.#renderFilter(this.points);
-    this.#renderSort(this.points);
+    this.#renderSort(SortType.DAY);
 
     this.#renderPointsList(this.points);
   }
@@ -100,21 +100,24 @@ export default class EventPresenter {
       return;
     }
 
+    remove(this.#sortComponent);
     this.#sortPoints(sortType);
     this.#clearPointList();
     this.#renderPointsList(this.points);
+    this.#renderSort(sortType);
   };
 
-  #renderSort() {
+  #renderSort(sortType) {
     this.#sortComponent = new TripSortView({
-      onSortTypeChange: this.#handleSortTypeChange
+      onSortTypeChange: this.#handleSortTypeChange,
+      currentSortType: sortType
     });
     render(this.#sortComponent, this.#siteMainElement.querySelector('.trip-events__trip-sort-container'));
   }
 
   #renderPointsList(points) {
     for (let i = 0; i < points.length; i++) {
-      const pointComponent = this.#renderPoint({point: points[i]});
+      const pointComponent = this.#renderPoint(points[i]);
       this.#pointComponents.push(pointComponent);
     }
   }
@@ -132,7 +135,7 @@ export default class EventPresenter {
       onModeChange: this.#handleModeChange
     });
     pointPresenter.init(point);
-    this.#pointPresenters.set(point.point.id, pointPresenter);
+    this.#pointPresenters.set(point.id, pointPresenter);
 
     return pointPresenter.point;
   }

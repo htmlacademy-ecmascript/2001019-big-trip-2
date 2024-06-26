@@ -103,13 +103,6 @@ export default class PointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    /*
-    здесь передавался поинт уже деструктурированный,
-    а старая логика рассчитана на то, что в неё передается поинт внутри объекта,
-    В результате когда point перерисовывался, в объекте уже не было свойства point и всё ломалось
-     */
-
-    // Меняем значение isFavorite на противоположное
     this.#point.point.isFavorite = !this.#point.point.isFavorite;
     this.#handleDataChange(this.#point);
   };

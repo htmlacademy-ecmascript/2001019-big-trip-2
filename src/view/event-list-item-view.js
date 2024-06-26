@@ -3,8 +3,7 @@ import dayjs from 'dayjs';
 import {getAvailableOffers} from '../model/offers-model.js';
 import {getDestinationById} from '../mock/destinations.js';
 import AbstractView from '../framework/view/abstract-view.js';
-function createEventListItem({point}) {
-  //параметром вместо (point) добавила ({point})
+function createEventListItem(point) {
   const offerItems = getAvailableOffers(point.type).filter((offer) => point.offers.includes(offer.id));
 
   return `<li class="trip-events__item">

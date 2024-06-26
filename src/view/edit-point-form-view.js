@@ -2,7 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 import {getDestinationById, mockDestinations} from '../mock/destinations.js';
 import {EVENT_TYPES} from '../const.js';
 import {getAvailableOffers} from '../model/offers-model.js';
-function createEditPointForm({point}) {
+function createEditPointForm(point) {
 
   const offerItems = getAvailableOffers(point.type);
 
