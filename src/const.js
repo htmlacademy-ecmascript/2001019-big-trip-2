@@ -51,4 +51,12 @@ const EmptyPointMessage = {
   future: 'There are no future events now',
 };
 
-export {EVENT_TYPES, FilterType, EmptyPointMessage};
+const SortType = {
+  DAY: 'sort-day',
+  EVENT: 'sort-event',
+  TIME: 'sort-time',
+  PRICE: 'sort-price',
+  OFFERS: 'sort-offer',
+};
+
+export {EVENT_TYPES, FilterType, EmptyPointMessage, SortType};

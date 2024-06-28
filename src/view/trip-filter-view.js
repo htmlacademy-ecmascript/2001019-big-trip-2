@@ -24,7 +24,6 @@ function createTripFilterTemplate(filter) {
 export default class TripFilterView extends AbstractView {
   #filters = null;
   #handleChange = null;
-
   constructor(filters, {onChange}) {
     super();
     this.#filters = filters;
@@ -39,6 +38,5 @@ export default class TripFilterView extends AbstractView {
   #changeHandler = (evt) => {
     evt.preventDefault();
     this.#handleChange(evt.target.value);
-    //console.log(this.#handleChange(evt.target.value));
   };
 }
