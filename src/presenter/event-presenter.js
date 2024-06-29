@@ -41,7 +41,7 @@ export default class EventPresenter {
     this.#filterComponent = new TripFilterView(filters, {onChange: this.#handleFilterChange});
     this.#sourcedEventPoints = [...this.points];
     this.#renderFilter(this.points);
-    this.#renderSort(SortType.DAY);
+    this.#renderSort(this.points);
 
     this.#renderPointsList(this.points);
   }
@@ -83,7 +83,7 @@ export default class EventPresenter {
   #sortPoints(sortType) {
     switch (sortType) {
       case SortType.PRICE:
-        this.points.sort(sortPriceDown); //здесь функция
+        this.points.sort(sortPriceDown);
         break;
       case SortType.TIME:
         this.points.sort(sortTimeDown);
@@ -100,17 +100,15 @@ export default class EventPresenter {
       return;
     }
 
-    remove(this.#sortComponent);
     this.#sortPoints(sortType);
     this.#clearPointList();
     this.#renderPointsList(this.points);
-    this.#renderSort(sortType);
   };
 
-  #renderSort(sortType) {
+  #renderSort() {
     this.#sortComponent = new TripSortView({
       onSortTypeChange: this.#handleSortTypeChange,
-      currentSortType: sortType
+      currentSortType: this.#currentSortType,
     });
     render(this.#sortComponent, this.#siteMainElement.querySelector('.trip-events__trip-sort-container'));
   }
