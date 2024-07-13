@@ -1,8 +1,9 @@
-//import AbstractView from '../framework/view/abstract-view.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {getDestinationById, mockDestinations} from '../mock/destinations.js';
 import {EVENT_TYPES} from '../const.js';
 import {getAvailableOffers} from '../model/offers-model.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 function createEditPointForm(point) {
 
   const offerItems = getAvailableOffers(point.type);
@@ -46,10 +47,10 @@ function createEditPointForm(point) {
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 12:25">
+                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${point.dateFrom}">
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 13:35">
+                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${point.dateTo}">
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
@@ -95,16 +96,32 @@ function createEditPointForm(point) {
 export default class EditPointFormView extends AbstractStatefulView {
   #handleEditClick = null;
   #handleFormSubmit = null;
-  constructor({point, onEditClick, onFormSubmit}) {
+  #datepickerFrom = null;
+  #datepickerTo = null;
+  constructor({point, onEditClick, onFormSubmit}) { //передаем обработчик onEditClick шаг 1
     super();
     this._setState(EditPointFormView.parsePointToState(point));
-    this.#handleEditClick = onEditClick;
+    this.#handleEditClick = onEditClick; //сохраняем обработчик в приватное совойство шаг 2
     this._restoreHandlers();
     this.#handleFormSubmit = onFormSubmit;
   }
 
   get template() {
     return createEditPointForm(this._state);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
   }
 
   reset(point) {
@@ -115,12 +132,14 @@ export default class EditPointFormView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.querySelector('.event--edit')
-      .addEventListener('click', this.#editClickHandler);
+      .addEventListener('click', this.#editClickHandler); //подписываемся на соответствующее событие шаг 3 подписываемся на приватный метод
     this.element.addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#priceInputHandler);
+
+    this.#setDatepicker();
   }
 
   #priceInputHandler = (evt) => {
@@ -130,9 +149,9 @@ export default class EditPointFormView extends AbstractStatefulView {
     });
   };
 
-  #editClickHandler = (evt) => {
+  #editClickHandler = (evt) => { //шаг 4 описываем сам обработчик
     if (evt.target.classList.contains('event__rollup-btn')) {
-      this.#handleEditClick();
+      this.#handleEditClick(); //шаг 5 вызываем обработчик, который пришел в конструктор и был записан в свойство в конструкторе
     }
   };
 
@@ -154,6 +173,47 @@ export default class EditPointFormView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormSubmit(EditPointFormView.parsePointToState(this._state));
+  };
+
+  #dateFromCloseHandler = ([userDate]) => {
+    this._setState({point: {...this._state.point, dateFrom: userDate}});
+    this.#datepickerTo.set('minDate', this._state.point.dateFrom);
+  };
+
+  #dateToCloseHandler = ([userDate]) => {
+    this._setState({point: {...this._state.point, dateFrom: userDate}});
+    this.#datepickerFrom.set('maxDate', this._state.point.dateTo);
+  };
+
+  #setDatepicker = () => {
+    const datePickerStartElement = this.element.querySelector('input[name=event-start-time]');
+    const datePickerEndElement = this.element.querySelector('input[name=event-end-time]');
+    const commonConfig = {
+      dateFormat: 'd/m/y H:i',
+      enableTime: true,
+      locale: {firstDayOfWeek: 1},
+      'time_24hr': true
+    };
+
+    this.#datepickerFrom = flatpickr(
+      datePickerStartElement,
+      {
+        ...commonConfig,
+        defaultDate: this._state.dateFrom, //в какой момент point превратился в _state
+        onClose: this.#dateFromCloseHandler,
+        maxDate: this._state.dateTo
+      }
+    );
+
+    this.#datepickerTo = flatpickr(
+      datePickerEndElement,
+      {
+        ...commonConfig,
+        defaultDate: this._state.dateTo,
+        onClose: this.#dateToCloseHandler,
+        minDate: this._state.dateFrom
+      }
+    );
   };
 
   static parsePointToState(point) {
