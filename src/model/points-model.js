@@ -6,4 +6,5 @@ export default class PointsModel {
   getPoints() {
     return [...this.#points];
   }
+  //почему не get points() {}
 }

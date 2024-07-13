@@ -1,6 +1,7 @@
 import {remove, render, replace} from '../framework/render.js';
 import EventListItemView from '../view/event-list-item-view.js';
 import EditPointFormView from '../view/edit-point-form-view.js';
+import AddNewPointFormView from '../view/add-new-point-form-view.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -15,6 +16,7 @@ export default class PointPresenter {
   #handleModeChange = null;
 
   #pointEditComponent = null;
+  #newPointComponent = null;
   #pointComponents = [];
 
   #point = null;
@@ -52,6 +54,10 @@ export default class PointPresenter {
         document.removeEventListener('keydown', this.#escKeyDownHandler);
       },
       onFormSubmit: () => {},
+    });
+
+    this.#newPointComponent = new AddNewPointFormView({
+      point: this.#point,
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
