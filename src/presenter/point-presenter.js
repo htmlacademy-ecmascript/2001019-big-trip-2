@@ -2,6 +2,7 @@ import {remove, render, replace} from '../framework/render.js';
 import EventListItemView from '../view/event-list-item-view.js';
 import EditPointFormView from '../view/edit-point-form-view.js';
 import AddNewPointFormView from '../view/add-new-point-form-view.js';
+import { UserAction, UpdateType } from "../const.js";
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -44,7 +45,6 @@ export default class PointPresenter {
         this.#replacePointToForm();
         document.addEventListener('keydown', this.#escKeyDownHandler);
       }
-
     });
 
     this.#pointEditComponent = new EditPointFormView({
@@ -53,7 +53,17 @@ export default class PointPresenter {
         this.#replaceFormToPoint();
         document.removeEventListener('keydown', this.#escKeyDownHandler);
       },
-      onFormSubmit: () => {},
+      // вытащить в метод #handleFormSubmit
+      onFormSubmit: (point) => {
+        console.log(point)
+        this.#handleDataChange(
+          UserAction.UPDATE_POINT,
+          UpdateType.MINOR,
+          point
+        );
+        this.#replaceFormToPoint();
+      },
+      onDeleteClick: this.#handleDeleteClick
     });
 
     this.#newPointComponent = new AddNewPointFormView({
@@ -113,7 +123,18 @@ export default class PointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#point.isFavorite = !this.#point.isFavorite;
-    this.#handleDataChange(this.#point);
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite},
+    );
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 }
