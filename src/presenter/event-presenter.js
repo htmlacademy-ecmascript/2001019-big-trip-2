@@ -1,19 +1,18 @@
 import {remove, render} from '../framework/render';
-import TripFilterView from '../view/trip-filter-view.js';
 import TripSortView from '../view/trip-sort-view.js';
 import NoPointView from '../view/no-point-view.js';
 import PointPresenter from './point-presenter.js';
-
-import {generateFilter} from '../mock/filter.js';
 import {filter} from '../utils/filter';
-import {updateItem} from '../utils.js';
 import {sortTimeDown, sortPriceDown} from '../utils/sort.js';
-import {SortType, UpdateType, UserAction} from '../const.js';
+import {FilterType, SortType, UpdateType, UserAction} from '../const.js';
+import FilterModel from "../model/filter-model.js";
 
+const filterModel = new FilterModel();
 
 export default class EventPresenter {
   #siteMainElement = null;
   #pointsModel = null;
+  #filterModel = null;
   #destinationModel = null;
   #offersModel = null;
   #tripEventListElement = null;
@@ -24,71 +23,46 @@ export default class EventPresenter {
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
   #sourcedEventPoints = [];
+  #filterType = FilterType.EVERYTHING;
 
-  constructor({siteMainElement, pointsModel, destinationModel, offersModel, tripEventListElement}) {
+  constructor({siteMainElement, pointsModel, destinationModel, offersModel, tripEventListElement, filterModel}) {
     this.#siteMainElement = siteMainElement;
     this.#pointsModel = pointsModel;
     this.#destinationModel = destinationModel;
     this.#offersModel = offersModel;
     this.#tripEventListElement = tripEventListElement;
+    this.#filterModel = filterModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
+    this.#filterType = this.#filterModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filter[this.#filterType](points);
+
     switch (this.#currentSortType) {
       case SortType.PRICE:
-        return [...this.#pointsModel.points].sort(sortPriceDown);
+        return filteredPoints.sort(sortPriceDown);
       case SortType.TIME:
-        return [...this.#pointsModel.points].sort(sortTimeDown);
+        return filteredPoints.sort(sortTimeDown);
     }
 
-    return this.#pointsModel.points;
+    return filteredPoints;
   }
 
   init() {
     this.destination = this.#destinationModel.getDestination();
     this.offers = this.#offersModel.getOffers();
-    const filters = generateFilter(this.points);
-    this.#filterComponent = new TripFilterView(filters, {onChange: this.#handleFilterChange});
     this.#sourcedEventPoints = [...this.points];
-    this.#renderFilter(this.points);
 
     this.#renderList();
   }
 
+
   #handleModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
-  };
-
-  #handleFilterChange = (filterType) => {
-    for (const pointComponentItem of this.#pointComponents) {
-      remove(pointComponentItem);
-    }
-
-    this.#pointComponents = [];
-    const points = filter[filterType](this.points);
-
-    if (this.#noPointComponent) {
-      remove(this.#noPointComponent);
-    }
-
-    if (points.length > 0) {
-      // this.#renderPointsList(points);
-    } else {
-      this.#renderNoPointComponent(filterType);
-    }
-
-  };
-
-  #renderFilter() {
-    render(this.#filterComponent, this.#siteMainElement.querySelector('.trip-controls__filters'));
-  }
-
-  #handlePointChange = (updatedPoint) => {
-    this.#pointComponents = updateItem(this.#pointComponents, updatedPoint);
-    this.#sourcedEventPoints = updateItem(this.#sourcedEventPoints, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
 
   #handleViewAction = (actionType, updateType, update) => {
@@ -139,18 +113,12 @@ export default class EventPresenter {
     });
     render(this.#sortComponent, this.#siteMainElement.querySelector('.trip-events__trip-sort-container'));
   }
-
-  #renderPointsList(points) {
-    for (let i = 0; i < points.length; i++) {
-      const pointComponent = this.#renderPoint(points[i]);
-      this.#pointComponents.push(pointComponent);
-    }
-  }
-
   #renderNoPointComponent(filterType) {
-    const noPointComponent = new NoPointView(filterType);
-    this.#noPointComponent = noPointComponent;
-    render(noPointComponent, this.#siteMainElement.querySelector('.trip-events'));
+    this.#noPointComponent = new NoPointView({
+      filterType: this.#filterType
+    });
+
+    render(this.#noPointComponent, this.#siteMainElement.querySelector('.trip-events'));
   }
 
   #renderPoint(point) {
@@ -192,6 +160,10 @@ export default class EventPresenter {
 
     for (let i = 0; i < points.length; i++) {
       render(this.#renderPoint(points[i]), this.#tripEventListElement);
+    }
+
+    if (this.#noPointComponent) {
+      remove(this.#noPointComponent);
     }
   }
 }

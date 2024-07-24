@@ -1,19 +1,18 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createTripFilterTemplate(filter) {
+function createTripFilterTemplate(filter, currentFilterType) {
   return `<form class="trip-filters" action="#" method="get">
-                ${filter.map((filterItem, currentType) => (`
+                ${filter.map((filterType) => (`
                 <div class="trip-filters__filter">
                   <input
-                  id="filter-${filterItem.type}"
+                  id="filter-${filterType}"
                   class="trip-filters__filter-input  visually-hidden"
                   type="radio"
                   name="trip-filter"
-                  value="${filterItem.type}"
-                  ${currentType === filterItem.type ? 'checked' : ''}
-                  ${filter[currentType].disabled ? 'disabled' : ''}
+                  value="${filterType}"
+                  ${currentFilterType === filterType ? 'checked' : ''}
                   />
-                  <label class="trip-filters__filter-label" for="filter-${filterItem.type}">${filterItem.type}</label>
+                  <label class="trip-filters__filter-label" for="filter-${filterType}">${filterType}</label>
                 </div>
                 `)).join('')}
 
@@ -23,20 +22,23 @@ function createTripFilterTemplate(filter) {
 
 export default class TripFilterView extends AbstractView {
   #filters = null;
-  #handleChange = null;
-  constructor(filters, {onChange}) {
+  #currentFilter = null;
+  #handleFilterTypeChange = null;
+  constructor({filters, currentFilterType, onFilterTypeChange}) {
     super();
     this.#filters = filters;
-    this.#handleChange = onChange;
-    this.element.addEventListener('change', this.#changeHandler);
+    this.#currentFilter = currentFilterType;
+    this.#handleFilterTypeChange = onFilterTypeChange;
+
+    this.element.addEventListener('change', this.#filterTypeChangeHandler);
   }
 
   get template() {
-    return createTripFilterTemplate(this.#filters);
+    return createTripFilterTemplate(this.#filters, this.#currentFilter);
   }
 
-  #changeHandler = (evt) => {
+  #filterTypeChangeHandler = (evt) => {
     evt.preventDefault();
-    this.#handleChange(evt.target.value);
-  };
+    this.#handleFilterTypeChange(evt.target.value);
+  }
 }
