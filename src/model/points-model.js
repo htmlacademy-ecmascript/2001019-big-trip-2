@@ -1,4 +1,4 @@
-import Observable from "../framework/observable.js";
+import Observable from '../framework/observable.js';
 import {mockPoints} from '../mock/points.js';
 
 export default class PointsModel extends Observable {
@@ -20,8 +20,6 @@ export default class PointsModel extends Observable {
       update,
       ...this.#points.slice(index + 1),
     ];
-
-    console.log(update)
 
     this._notify(updateType, update);
   }

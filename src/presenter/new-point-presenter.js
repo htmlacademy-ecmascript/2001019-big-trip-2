@@ -1,6 +1,6 @@
-import {remove, render, RenderPosition} from "../framework/render";
-import {UserAction, UpdateType} from "../const";
-import AddNewPointFormView from "../view/add-new-point-form-view";
+import {remove, render, RenderPosition} from '../framework/render';
+import {UserAction, UpdateType} from '../const';
+import AddNewPointFormView from '../view/add-new-point-form-view';
 
 export default class NewPointPresenter {
   #pointListContainer = null;

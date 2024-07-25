@@ -1,6 +1,6 @@
 import {render, replace, remove} from '../framework/render.js';
-import TripFilterView from "../view/trip-filter-view.js";
-import {FilterType, UpdateType} from "../const.js";
+import TripFilterView from '../view/trip-filter-view.js';
+import {FilterType, UpdateType} from '../const.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -19,8 +19,6 @@ export default class FilterPresenter {
   }
 
   get filters() {
-    const points = this.#pointsModel.points;
-
     return Object.values(FilterType).map((type) => (type));
   }
 

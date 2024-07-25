@@ -1,8 +1,7 @@
 import {remove, render, replace} from '../framework/render.js';
 import EventListItemView from '../view/event-list-item-view.js';
 import EditPointFormView from '../view/edit-point-form-view.js';
-import AddNewPointFormView from '../view/add-new-point-form-view.js';
-import { UserAction, UpdateType } from "../const.js";
+import { UserAction, UpdateType } from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -53,13 +52,11 @@ export default class PointPresenter {
         this.#replaceFormToPoint();
         document.removeEventListener('keydown', this.#escKeyDownHandler);
       },
-      // вытащить в метод #handleFormSubmit
-      onFormSubmit: (point) => {
-        console.log(point)
+      onFormSubmit: (data) => {
         this.#handleDataChange(
           UserAction.UPDATE_POINT,
           UpdateType.MINOR,
-          point
+          data
         );
         this.#replaceFormToPoint();
       },

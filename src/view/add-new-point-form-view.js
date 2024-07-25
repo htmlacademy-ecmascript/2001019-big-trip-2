@@ -1,4 +1,5 @@
-import AbstractView from '../framework/view/abstract-view.js';
+//import he from 'he';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {getDestinationById, mockDestinations} from '../mock/destinations.js';
 import {EVENT_TYPES} from '../const.js';
 import {getAvailableOffers} from '../model/offers-model.js';
@@ -66,7 +67,7 @@ function createAddNewPointFormTemplate() {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
+                    <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="">
                   </div>
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
                   <button class="event__reset-btn" type="reset">Cancel</button>
@@ -104,21 +105,21 @@ function createAddNewPointFormTemplate() {
             </li>`;
 }
 
-export default class AddNewPointFormView extends AbstractView {
+export default class AddNewPointFormView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleCancelClick = null;
 
-  constructor({onFormSubmit, onCancelClick}) {
+  constructor({point, onFormSubmit, onCancelClick}) {
     super();
+    this._setState(AddNewPointFormView.parsePointToState(point));
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCancelClick = onCancelClick;
-    console.log(onCancelClick)
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createAddNewPointFormTemplate();
+    return createAddNewPointFormTemplate(this._state);
   }
 
   _restoreHandlers() {
@@ -126,17 +127,25 @@ export default class AddNewPointFormView extends AbstractView {
 
     this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#cancelClickHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
   }
 
-  #cancelClickHandler = (evt) => {
+  #typeChangeHandler = (evt) => {
+    this.updateElement({
+      type: evt.target.value,
+    });
+  };
+
+  #cancelClickHandler = () => {
     this.#handleCancelClick();
-  }
+  };
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
 
-    const point =   {
+    const point = {
       id: '1da44258-4c38-4867-a9bd-2448d610caab',
-      basePrice: 7777,
+      basePrice: 5555,
       dateFrom: '2024-05-28T05:19:06.165Z',
       dateTo: '2024-05-29T01:40:06.165Z',
       destination: '40790a4f-e69a-425d-b9d7-bf3e31993508',
@@ -151,4 +160,13 @@ export default class AddNewPointFormView extends AbstractView {
 
     this.#handleFormSubmit(point);
   };
+
+  static parsePointToState(point) {
+    return point;
+  }
+
+  static parseStateToPoint(state) {
+    const point = {...state};
+    return point;
+  }
 }

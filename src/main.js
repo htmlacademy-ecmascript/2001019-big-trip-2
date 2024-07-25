@@ -2,9 +2,9 @@ import EventPresenter from './presenter/event-presenter.js';
 import PointsModel from './model/points-model.js';
 import DestinationModel from './model/destination-model.js';
 import OffersModel from './model/offers-model.js';
-import FilterModel from "./model/filter-model.js";
-import FilterPresenter from "./presenter/filter-presenter";
-import NewPointButtonView from "./view/new-point-button-view";
+import FilterModel from './model/filter-model.js';
+import FilterPresenter from './presenter/filter-presenter';
+import NewPointButtonView from './view/new-point-button-view';
 import {render} from './framework/render';
 
 const siteMainElement = document.querySelector('.page-body');

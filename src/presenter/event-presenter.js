@@ -2,13 +2,10 @@ import {remove, render} from '../framework/render';
 import TripSortView from '../view/trip-sort-view.js';
 import NoPointView from '../view/no-point-view.js';
 import PointPresenter from './point-presenter.js';
-import NewPointPresenter from "./new-point-presenter";
+import NewPointPresenter from './new-point-presenter';
 import {filter} from '../utils/filter';
 import {sortTimeDown, sortPriceDown} from '../utils/sort.js';
 import {FilterType, SortType, UpdateType, UserAction} from '../const.js';
-import FilterModel from "../model/filter-model.js";
-
-const filterModel = new FilterModel();
 
 export default class EventPresenter {
   #siteMainElement = null;
@@ -74,13 +71,13 @@ export default class EventPresenter {
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
   }
+
   #handleModeChange = () => {
     this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
   #handleViewAction = (actionType, updateType, update) => {
-    console.log(actionType, updateType, update);
     switch (actionType) {
       case UserAction.UPDATE_POINT:
         this.#pointsModel.updatePoint(updateType, update);
@@ -95,7 +92,6 @@ export default class EventPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    console.log(updateType, data);
     switch (updateType) {
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init(data);
@@ -113,7 +109,7 @@ export default class EventPresenter {
 
   #handleCancelClick = () => {
     this.#newPointPresenter.destroy();
-  }
+  };
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -131,7 +127,8 @@ export default class EventPresenter {
     });
     render(this.#sortComponent, this.#siteMainElement.querySelector('.trip-events__trip-sort-container'));
   }
-  #renderNoPointComponent(filterType) {
+
+  #renderNoPointComponent() {
     this.#noPointComponent = new NoPointView({
       filterType: this.#filterType
     });
@@ -152,7 +149,6 @@ export default class EventPresenter {
   }
 
   #clearList({resetSortType = false}) {
-    const pointCount = this.points.length;
 
     this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
