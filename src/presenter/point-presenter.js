@@ -66,10 +66,6 @@ export default class PointPresenter {
       onDeleteClick: this.#handleDeleteClick
     });
 
-    this.#newPointComponent = new AddNewPointFormView({
-      point: this.#point,
-    });
-
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointComponent, this.#tripEventListElement);
       return;

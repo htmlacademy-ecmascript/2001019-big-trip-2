@@ -105,13 +105,50 @@ function createAddNewPointFormTemplate() {
 }
 
 export default class AddNewPointFormView extends AbstractView {
+  #handleFormSubmit = null;
+  #handleCancelClick = null;
 
-  constructor({destination}) {
+  constructor({onFormSubmit, onCancelClick}) {
     super();
-    this.destination = destination;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleCancelClick = onCancelClick;
+    console.log(onCancelClick)
+
+    this._restoreHandlers();
   }
 
   get template() {
     return createAddNewPointFormTemplate();
   }
+
+  _restoreHandlers() {
+    this.element.addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#cancelClickHandler);
+  }
+
+  #cancelClickHandler = (evt) => {
+    this.#handleCancelClick();
+  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+
+    const point =   {
+      id: '1da44258-4c38-4867-a9bd-2448d610caab',
+      basePrice: 7777,
+      dateFrom: '2024-05-28T05:19:06.165Z',
+      dateTo: '2024-05-29T01:40:06.165Z',
+      destination: '40790a4f-e69a-425d-b9d7-bf3e31993508',
+      isFavorite: false,
+      offers: [
+        'fe667e84-c5b4-4f6f-8e11-90e1260af303',
+        '49d81986-d8f4-4bde-8bbf-3d193f0db2aa',
+        '04e42937-c64d-4fae-93ce-f5ca690b5b78'
+      ],
+      type: 'flight'
+    };
+
+    this.#handleFormSubmit(point);
+  };
 }

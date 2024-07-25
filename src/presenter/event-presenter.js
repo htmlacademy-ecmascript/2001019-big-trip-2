@@ -2,6 +2,7 @@ import {remove, render} from '../framework/render';
 import TripSortView from '../view/trip-sort-view.js';
 import NoPointView from '../view/no-point-view.js';
 import PointPresenter from './point-presenter.js';
+import NewPointPresenter from "./new-point-presenter";
 import {filter} from '../utils/filter';
 import {sortTimeDown, sortPriceDown} from '../utils/sort.js';
 import {FilterType, SortType, UpdateType, UserAction} from '../const.js';
@@ -21,17 +22,25 @@ export default class EventPresenter {
   #noPointComponent = null;
   #sortComponent = null;
   #pointPresenters = new Map();
+  #newPointPresenter = null;
   #currentSortType = SortType.DAY;
   #sourcedEventPoints = [];
   #filterType = FilterType.EVERYTHING;
 
-  constructor({siteMainElement, pointsModel, destinationModel, offersModel, tripEventListElement, filterModel}) {
+  constructor({siteMainElement, pointsModel, destinationModel, offersModel, tripEventListElement, filterModel, onNewPointDestroy}) {
     this.#siteMainElement = siteMainElement;
     this.#pointsModel = pointsModel;
     this.#destinationModel = destinationModel;
     this.#offersModel = offersModel;
     this.#tripEventListElement = tripEventListElement;
     this.#filterModel = filterModel;
+
+    this.#newPointPresenter = new NewPointPresenter({
+      pointListContainer: this.#tripEventListElement,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewPointDestroy,
+      onCancelClick: this.#handleCancelClick,
+    });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -60,8 +69,13 @@ export default class EventPresenter {
     this.#renderList();
   }
 
-
+  createPoint() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newPointPresenter.init();
+  }
   #handleModeChange = () => {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -96,6 +110,10 @@ export default class EventPresenter {
         break;
     }
   };
+
+  #handleCancelClick = () => {
+    this.#newPointPresenter.destroy();
+  }
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -136,6 +154,7 @@ export default class EventPresenter {
   #clearList({resetSortType = false}) {
     const pointCount = this.points.length;
 
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 
