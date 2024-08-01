@@ -5,7 +5,7 @@ import {getAvailableOffers} from '../model/offers-model.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 function createEditPointForm(point) {
-
+  //console.log(point.offers);
   const offerItems = getAvailableOffers(point.type);
 
   return `<li class="trip-events__item">
@@ -99,7 +99,8 @@ export default class EditPointFormView extends AbstractStatefulView {
   #handleDeleteClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
-  constructor({point, onEditClick, onFormSubmit, onDeleteClick}) { //передаем обработчик onEditClick шаг 1
+  constructor({point, onEditClick, onFormSubmit, onDeleteClick}) { //передаем обработчик onEditClick шаг 1. ПЕРЕДАЛИ onOfferChange
+    //console.log('init')
     super();
     this._setState(EditPointFormView.parsePointToState(point));
     this.#handleEditClick = onEditClick; //сохраняем обработчик в приватное совойство шаг 2
@@ -143,9 +144,25 @@ export default class EditPointFormView extends AbstractStatefulView {
       .addEventListener('change', this.#priceInputHandler);
     this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#formDeleteClickHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChangeHandler); //подписываемся на соответствующее событие шаг 3 подписываемся на приватный метод
 
     this.#setDatepicker();
   }
+
+  #offerChangeHandler = (evt) => {
+    evt.preventDefault();
+    const selectedOffers = [...this._state.offers];
+    const offerId = evt.target.name;
+    if (evt.target.checked) {
+      selectedOffers.push(offerId);
+    } else {
+      selectedOffers.splice(selectedOffers.indexOf(offerId), 1);
+    }
+
+    this.updateElement({
+      offers: selectedOffers
+    });
+  };
 
   #priceInputHandler = (evt) => {
     evt.preventDefault();
@@ -181,13 +198,13 @@ export default class EditPointFormView extends AbstractStatefulView {
   };
 
   #dateFromCloseHandler = ([userDate]) => {
-    this._setState({point: {...this._state.point, dateFrom: userDate}});
-    this.#datepickerTo.set('minDate', this._state.point.dateFrom);
+    this._setState({...this._state, dateFrom: userDate.toISOString()});
+    this.#datepickerTo.set('minDate', this._state.dateFrom);
   };
 
   #dateToCloseHandler = ([userDate]) => {
-    this._setState({point: {...this._state.point, dateFrom: userDate}});
-    this.#datepickerFrom.set('maxDate', this._state.point.dateTo);
+    this._setState({...this._state, dateTo: userDate.toISOString()});
+    this.#datepickerFrom.set('maxDate', this._state.dateTo);
   };
 
   #setDatepicker = () => {
