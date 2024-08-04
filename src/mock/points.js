@@ -2,8 +2,8 @@ export const mockPoints = [
   {
     id: 'c1333735-b4af-48b8-9252-7c5126d077cf',
     basePrice: 1451,
-    dateFrom: '2024-05-08T17:57:06.165Z',
-    dateTo: '2024-05-09T03:03:06.165Z',
+    dateFrom: '2024-08-08T17:57:06.165Z',
+    dateTo: '2024-08-09T03:03:06.165Z',
     destination: '220da512-955d-4c34-8753-6e267d6773c4',
     isFavorite: true,
     offers: [],
@@ -12,8 +12,8 @@ export const mockPoints = [
   {
     id: '203106c7-9956-427e-b20d-efae95dc2d4c',
     basePrice: 277,
-    dateFrom: '2024-05-10T02:12:06.165Z',
-    dateTo: '2024-05-11T11:19:06.165Z',
+    dateFrom: '2024-08-10T02:12:06.165Z',
+    dateTo: '2024-08-11T11:19:06.165Z',
     destination: '4c255f64-23df-4cdc-8153-6c7f95bb7bf6',
     isFavorite: false,
     offers: [
@@ -26,8 +26,8 @@ export const mockPoints = [
   {
     id: '6a4e092f-b8e5-4393-8570-916d012247a5',
     basePrice: 5053,
-    dateFrom: '2024-05-13T03:43:06.165Z',
-    dateTo: '2024-05-13T20:53:06.165Z',
+    dateFrom: '2024-08-13T03:43:06.165Z',
+    dateTo: '2024-08-13T20:53:06.165Z',
     destination: '3b0e2445-d1d9-40b3-88a9-0a586be6866a',
     isFavorite: true,
     offers: [
@@ -39,8 +39,8 @@ export const mockPoints = [
   {
     id: '05a441ee-2d55-4ff6-be7d-4a506dfb6e04',
     basePrice: 7098,
-    dateFrom: '2024-05-15T09:50:06.165Z',
-    dateTo: '2024-05-16T18:17:06.165Z',
+    dateFrom: '2024-08-15T09:50:06.165Z',
+    dateTo: '2024-08-16T18:17:06.165Z',
     destination: '3b0e2445-d1d9-40b3-88a9-0a586be6866a',
     isFavorite: false,
     offers: [],
@@ -49,8 +49,8 @@ export const mockPoints = [
   {
     id: '27f76798-a449-473a-91a9-23cb4211a177',
     basePrice: 5254,
-    dateFrom: '2024-05-17T16:33:06.165Z',
-    dateTo: '2024-05-18T15:44:06.165Z',
+    dateFrom: '2024-08-17T16:33:06.165Z',
+    dateTo: '2024-08-18T15:44:06.165Z',
     destination: '40790a4f-e69a-425d-b9d7-bf3e31993508',
     isFavorite: true,
     offers: [],
@@ -133,8 +133,8 @@ export const mockPoints = [
   {
     id: '7f1bbb33-687e-4b5f-8042-89d69b305268',
     basePrice: 730,
-    dateFrom: '2024-05-30T01:23:06.165Z',
-    dateTo: '2024-05-30T08:57:06.165Z',
+    dateFrom: '2024-07-24T01:23:06.165Z',
+    dateTo: '2024-07-24T08:57:06.165Z',
     destination: '1213bb06-f35e-4e9c-bfad-8c8d552d4b27',
     isFavorite: false,
     offers: [
