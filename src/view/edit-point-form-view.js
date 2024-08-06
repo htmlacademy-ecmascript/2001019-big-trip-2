@@ -1,12 +1,11 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {getDestinationById, mockDestinations} from '../mock/destinations.js';
+import {mockDestinations} from '../mock/destinations.js';
 import {EVENT_TYPES} from '../const.js';
-import {getAvailableOffers} from '../model/offers-model.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-function createEditPointForm(point) {
-  //console.log(point.offers);
-  const offerItems = getAvailableOffers(point.type);
+function createEditPointForm(point, destinations, offers) {
+  const pointDestination = destinations.find((destItem) => destItem.id === point.destination);
+  const availableOffers = offers.find((offer) => offer.type === point.type);
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -37,7 +36,7 @@ function createEditPointForm(point) {
                       ${point.type}
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
-                    value="${point.destination ? getDestinationById(point.destination).name : ''}" list="destination-list-1">
+                    value="${point.destination ? pointDestination.name : ''}" list="destination-list-1">
                     <datalist id="destination-list-1">
                     ${mockDestinations.map((destinationItem) => (`
                       <option value="${destinationItem.name}"></option>
@@ -71,7 +70,7 @@ function createEditPointForm(point) {
                   <section class="event__section  event__section--offers">
                   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                   <div class="event__available-offers">
-                    ${offerItems.map((offerItem, offerTitle) => (`
+                    ${availableOffers ? availableOffers.offers.map((offerItem, offerTitle) => (`
                       <div class="event__offer-selector">
                         <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-${offerTitle}" type="checkbox" name="${offerItem.id}"
                         ${point.offers.includes(offerItem.id) ? 'checked' : ''}>
@@ -81,12 +80,12 @@ function createEditPointForm(point) {
                           <span class="event__offer-price">${offerItem.price}</span>
                         </label>
                       </div>
-                    `)).join('')}
+                    `)).join('') : ''}
                   </div>
                 </section>
                 <section class="event__section  event__section--destination">
                   <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                  <p class="event__destination-description">${point.destination ? getDestinationById(point.destination).description : ''}</p>
+                  <p class="event__destination-description">${point.destination ? pointDestination.description : ''}</p>
                 </section>
               </section>
               </form>
@@ -99,19 +98,22 @@ export default class EditPointFormView extends AbstractStatefulView {
   #handleDeleteClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
-  constructor({point, onEditClick, onFormSubmit, onDeleteClick}) { //передаем обработчик onEditClick шаг 1. ПЕРЕДАЛИ onOfferChange
-    //console.log('init')
+  #destinations = [];
+  #offers = [];
+  constructor({point, onEditClick, onFormSubmit, onDeleteClick, destinations, offers}) {
     super();
     this._setState(EditPointFormView.parsePointToState(point));
-    this.#handleEditClick = onEditClick; //сохраняем обработчик в приватное совойство шаг 2
+    this.#handleEditClick = onEditClick;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleDeleteClick = onDeleteClick;
+    this.#destinations = destinations;
+    this.#offers = offers;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createEditPointForm(this._state);
+    return createEditPointForm(this._state, this.#destinations, this.#offers);
   }
 
   removeElement() {
@@ -136,7 +138,7 @@ export default class EditPointFormView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.querySelector('.event--edit')
-      .addEventListener('click', this.#editClickHandler); //подписываемся на соответствующее событие шаг 3 подписываемся на приватный метод
+      .addEventListener('click', this.#editClickHandler);
     this.element.addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
@@ -144,7 +146,7 @@ export default class EditPointFormView extends AbstractStatefulView {
       .addEventListener('change', this.#priceInputHandler);
     this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#formDeleteClickHandler);
-    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChangeHandler); //подписываемся на соответствующее событие шаг 3 подписываемся на приватный метод
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChangeHandler);
 
     this.#setDatepicker();
   }
@@ -171,9 +173,9 @@ export default class EditPointFormView extends AbstractStatefulView {
     });
   };
 
-  #editClickHandler = (evt) => { //шаг 4 описываем сам обработчик
+  #editClickHandler = (evt) => {
     if (evt.target.classList.contains('event__rollup-btn')) {
-      this.#handleEditClick(); //шаг 5 вызываем обработчик, который пришел в конструктор и был записан в свойство в конструкторе
+      this.#handleEditClick();
     }
   };
 
@@ -221,7 +223,7 @@ export default class EditPointFormView extends AbstractStatefulView {
       datePickerStartElement,
       {
         ...commonConfig,
-        defaultDate: this._state.dateFrom, //в какой момент point превратился в _state
+        defaultDate: this._state.dateFrom,
         onClose: this.#dateFromCloseHandler,
         maxDate: this._state.dateTo
       }
