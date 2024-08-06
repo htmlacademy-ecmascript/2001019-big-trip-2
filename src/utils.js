@@ -37,6 +37,5 @@ function formatDuration(durationMinutes) {
 function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
-//updateItem удалить
 
 export {getRandomArrayElement, humanizeEventDate, humanizeEventTime, formatDuration, updateItem};

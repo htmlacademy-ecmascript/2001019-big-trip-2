@@ -1,10 +1,14 @@
 import {formatDuration, humanizeEventDate, humanizeEventTime} from '../utils.js';
 import dayjs from 'dayjs';
-import {getAvailableOffers} from '../model/offers-model.js';
-import {getDestinationById} from '../mock/destinations.js';
 import AbstractView from '../framework/view/abstract-view.js';
-function createEventListItem(point) {
-  const offerItems = getAvailableOffers(point.type).filter((offer) => point.offers.includes(offer.id));
+function createEventListItem(point, destinations, offers) {
+  const pointDestination = destinations.find((destItem) => destItem.id === point.destination);
+  const availableOffers = offers.find((offer) => offer.type === point.type);
+  let pointOffers = [];
+
+  if (availableOffers && availableOffers.offers.length > 0) {
+    pointOffers = availableOffers.offers.filter((offer) => point.offers.includes(offer.id));
+  }
 
   return `<li class="trip-events__item">
               <div class="event">
@@ -12,7 +16,7 @@ function createEventListItem(point) {
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${point.type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${point.type} ${getDestinationById(point.destination).name}</h3>
+                <h3 class="event__title">${point.type} ${pointDestination.name}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="2019-03-18T10:30">${humanizeEventTime(point.dateFrom)}</time>
@@ -26,7 +30,7 @@ function createEventListItem(point) {
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                ${offerItems.map((offerItem) => (`
+                ${pointOffers.map((offerItem) => (`
                   <li class="event__offer">
                     <span class="event__offer-title">${offerItem.title}</span>
                     &plus;&euro;&nbsp;
@@ -51,11 +55,15 @@ export default class EventListItemView extends AbstractView {
   #point = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
-  constructor({point, onEditClick, onFavoriteClick}) {
+  #destinations = null;
+  #offers = null;
+  constructor({point, onEditClick, onFavoriteClick, destinations, offers}) {
     super();
     this.#point = point;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
+    this.#destinations = destinations;
+    this.#offers = offers;
 
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editClickHandler);
@@ -64,7 +72,7 @@ export default class EventListItemView extends AbstractView {
   }
 
   get template() {
-    return createEventListItem(this.#point);
+    return createEventListItem(this.#point, this.#destinations, this.#offers);
   }
 
   #editClickHandler = (evt) => {

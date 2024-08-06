@@ -16,16 +16,18 @@ export default class PointPresenter {
   #handleModeChange = null;
 
   #pointEditComponent = null;
-  #newPointComponent = null;
-  #pointComponents = [];
+  #destinations = [];
+  #offers = [];
 
   #point = null;
   #mode = Mode.DEFAULT;
 
-  constructor({tripEventListElement, onDataChange, onModeChange}) {
+  constructor({tripEventListElement, onDataChange, onModeChange, destinations, offers}) {
     this.#tripEventListElement = tripEventListElement;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+    this.#destinations = destinations;
+    this.#offers = offers;
   }
 
   get point() {
@@ -40,6 +42,8 @@ export default class PointPresenter {
     this.#pointComponent = new EventListItemView({
       point: this.#point,
       onFavoriteClick: this.#handleFavoriteClick,
+      destinations: this.#destinations,
+      offers: this.#offers,
       onEditClick: () => {
         this.#replacePointToForm();
         document.addEventListener('keydown', this.#escKeyDownHandler);
@@ -60,7 +64,9 @@ export default class PointPresenter {
         );
         this.#replaceFormToPoint();
       },
-      onDeleteClick: this.#handleDeleteClick
+      onDeleteClick: this.#handleDeleteClick,
+      destinations: this.#destinations,
+      offers: this.#offers,
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {

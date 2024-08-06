@@ -10,11 +10,25 @@ function getAvailableOffers(type) {
   return offerItems.offers;
 }
 export default class OffersModel {
-  #offers = mockOffers;
+  #offers = [];
+  #pointsApiService = null;
+
+  constructor({pointsApiService}) {
+    this.#pointsApiService = pointsApiService;
+  }
+
+  async init() {
+    try {
+      this.#offers = await this.#pointsApiService.offers;
+    } catch(err) {
+      this.#offers = [];
+    }
+  }
 
   getOffers() {
     return [...this.#offers];
   }
 }
+
 
 export {getAvailableOffers};
