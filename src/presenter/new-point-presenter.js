@@ -1,7 +1,6 @@
 import {remove, render, RenderPosition} from '../framework/render';
 import {UserAction, UpdateType} from '../const';
 import AddNewPointFormView from '../view/add-new-point-form-view';
-import {nanoid} from 'nanoid';
 
 export default class NewPointPresenter {
   #pointListContainer = null;
@@ -11,11 +10,16 @@ export default class NewPointPresenter {
   #pointAddComponent = null;
   #handleCancelClick = null;
 
-  constructor({pointListContainer, onDataChange, onDestroy, onCancelClick}) {
+  #destinations = [];
+  #offers = [];
+
+  constructor({pointListContainer, onDataChange, onDestroy, onCancelClick, destinations, offers}) {
     this.#pointListContainer = pointListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
     this.#handleCancelClick = onCancelClick;
+    this.#destinations = destinations;
+    this.#offers = offers;
   }
 
   init() {
@@ -25,7 +29,9 @@ export default class NewPointPresenter {
 
     this.#pointAddComponent = new AddNewPointFormView({
       onFormSubmit: this.#handleFormSubmit,
-      onCancelClick: this.#handleCancelClick
+      onCancelClick: this.#handleCancelClick,
+      destinations: this.#destinations,
+      offers: this.#offers,
     });
 
     render(this.#pointAddComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
@@ -50,7 +56,7 @@ export default class NewPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...point}
+      point,
     );
     this.destroy();
   };

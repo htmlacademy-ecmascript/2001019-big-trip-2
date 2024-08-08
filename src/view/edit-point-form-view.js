@@ -38,7 +38,7 @@ function createEditPointForm(point, destinations, offers) {
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
                     value="${point.destination ? pointDestination.name : ''}" list="destination-list-1">
                     <datalist id="destination-list-1">
-                    ${mockDestinations.map((destinationItem) => (`
+                    ${destinations.map((destinationItem) => (`
                       <option value="${destinationItem.name}"></option>
                     `)).join('')}
                     </datalist>
@@ -246,11 +246,20 @@ export default class EditPointFormView extends AbstractStatefulView {
   };
 
   static parsePointToState(point) {
-    return point;
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
   }
 
   static parseStateToPoint(state) {
     const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
     return point;
   }
 }

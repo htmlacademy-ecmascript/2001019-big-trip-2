@@ -15,20 +15,19 @@ const siteMainElement = document.querySelector('.page-body');
 const filterElement = siteMainElement.querySelector('.trip-main__trip-controls');
 const tripEventListElement = siteMainElement.querySelector('.trip-events__list');
 const siteHeaderElement = siteMainElement.querySelector('.page-header__container');
+const api = new PointsApiService(END_POINT, AUTHORIZATION);
 
-const pointsModel = new PointsModel({
-  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
-});
 const destinationModel = new DestinationModel({
-  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
+  pointsApiService: api
 });
-
-destinationModel.init();
 
 const offersModel = new OffersModel({
-  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
+  pointsApiService: api
 });
-offersModel.init();
+
+const pointsModel = new PointsModel({
+  pointsApiService: api
+});
 
 const filterModel = new FilterModel();
 
@@ -63,7 +62,13 @@ function handleNewPointButtonClick() {
 
 filterPresenter.init();
 eventPresenter.init();
-pointsModel.init()
-  .finally(() => {
-    render(newPointButtonComponent, siteHeaderElement);
+
+
+destinationModel.init().finally(() => {
+  offersModel.init().finally(() => {
+    pointsModel.init()
+      .finally(() => {
+        render(newPointButtonComponent, siteHeaderElement);
+      });
   });
+});

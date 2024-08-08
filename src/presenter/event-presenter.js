@@ -24,6 +24,7 @@ export default class EventPresenter {
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
+  #onNewPointDestroy = null;
 
   constructor({siteMainElement, pointsModel, destinationModel, offersModel, tripEventListElement, filterModel, onNewPointDestroy}) {
     this.#siteMainElement = siteMainElement;
@@ -32,12 +33,15 @@ export default class EventPresenter {
     this.#offersModel = offersModel;
     this.#tripEventListElement = tripEventListElement;
     this.#filterModel = filterModel;
+    this.#onNewPointDestroy = onNewPointDestroy;
 
     this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#tripEventListElement,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewPointDestroy,
       onCancelClick: this.#handleCancelClick,
+      destinations: this.#destinationModel.getDestinations(),
+      offers: this.#offersModel.getOffers()
     });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -111,6 +115,14 @@ export default class EventPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#newPointPresenter = new NewPointPresenter({
+          pointListContainer: this.#tripEventListElement,
+          onDataChange: this.#handleViewAction,
+          onDestroy: this.#onNewPointDestroy,
+          onCancelClick: this.#handleCancelClick,
+          destinations: this.#destinationModel.getDestinations(),
+          offers: this.#offersModel.getOffers()
+        });
         this.#renderList();
         break;
     }

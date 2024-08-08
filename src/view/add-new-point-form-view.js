@@ -1,7 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {getDestinationById, mockDestinations} from '../mock/destinations.js';
+import {mockDestinations} from '../mock/destinations.js';
 import {EVENT_TYPES} from '../const.js';
-import {getAvailableOffers} from '../model/offers-model.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -9,15 +8,15 @@ const DEFAULT_POINT = {
   basePrice: 0,
   dateFrom: '',
   dateTo: '',
-  destination: '40790a4f-e69a-425d-b9d7-bf3e31993508',
   offers: [
   ],
-  type: 'flight'
+  type: 'flight',
+  isFavorite: false
 };
 
-const destinationItem = getDestinationById(DEFAULT_POINT.destination);
-
-function createAddNewPointFormTemplate(point) {
+function createAddNewPointFormTemplate(point, destinations, offers) {
+  const pointDestination = destinations.find((destItem) => destItem.id === point.destination);
+  const availableOffers = offers.find((offer) => offer.type === point.type);
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -45,10 +44,10 @@ function createAddNewPointFormTemplate(point) {
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${point.type}
                     </label>
-                    <input required class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${point.destination ? getDestinationById(point.destination).name : ''}" list="destination-list-1">
+                    <input required class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1">
                     <datalist id="destination-list-1">
-                    ${mockDestinations.map((destItem) => (`
-                      <option value="${destItem.name}"></option>
+                    ${destinations.map((destinationItem) => (`
+                      <option value="${destinationItem.name}"></option>
                     `)).join('')}
                     </datalist>
 
@@ -72,26 +71,27 @@ function createAddNewPointFormTemplate(point) {
 
                 <section class="event__details">
                   <section class="event__section  event__section--offers">
-                    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-                    <div class="event__available-offers">
-                    ${getAvailableOffers(point.type).map((offerItem, offerTitle) => (`
+                  <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+                  <div class="event__available-offers">
+                    ${availableOffers ? availableOffers.offers.map((offerItem, offerTitle) => (`
                       <div class="event__offer-selector">
                         <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-${offerTitle}" type="checkbox" name="${offerItem.id}"
                         ${point.offers.includes(offerItem.id) ? 'checked' : ''}>
                         <label class="event__offer-label" for="event-offer-comfort-${offerTitle}">
-                          <span class="event__offer-title">${offerItem.title}</span>&plus;&euro;&nbsp;
+                          <span class="event__offer-title">${offerItem.title}</span>
+                          &plus;&euro;&nbsp;
                           <span class="event__offer-price">${offerItem.price}</span>
                         </label>
                       </div>
-                    `)).join('')}
-                    </div>
+                    `)).join('') : ''}
+                  </div>
                   </section>
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${destinationItem.description}</p>
+                    <p class="event__destination-description">${pointDestination.description}</p>
                     <div class="event__photos-container">
                       <div class="event__photos-tape">
-                      ${destinationItem.pictures.map((destinationPhoto) => (`
+                      ${pointDestination.pictures.map((destinationPhoto) => (`
                         <img class="event__photo" src="${destinationPhoto.src}" alt="Event photo">
                       `)).join('')}
                       </div>
@@ -107,18 +107,26 @@ export default class AddNewPointFormView extends AbstractStatefulView {
   #handleCancelClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #destinations = [];
+  #offers = [];
 
-  constructor({onFormSubmit, onCancelClick}) {
+  constructor({onFormSubmit, onCancelClick, destinations, offers}) {
     super();
-    this._setState(AddNewPointFormView.parsePointToState(DEFAULT_POINT));
+    const defaultPoint = {
+      ...AddNewPointFormView.parsePointToState(DEFAULT_POINT),
+      destination: destinations[0].id
+    };
+    this._setState(defaultPoint);
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCancelClick = onCancelClick;
+    this.#destinations = destinations;
+    this.#offers = offers;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createAddNewPointFormTemplate(this._state);
+    return createAddNewPointFormTemplate(this._state, this.#destinations, this.#offers);
   }
 
   _restoreHandlers() {
