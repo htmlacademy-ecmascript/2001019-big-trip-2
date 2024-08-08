@@ -9,7 +9,6 @@ export default class NewPointPresenter {
 
   #pointAddComponent = null;
   #handleCancelClick = null;
-
   #destinations = [];
   #offers = [];
 
@@ -39,6 +38,32 @@ export default class NewPointPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointAddComponent.updateElement({ //здесь был #taskEditComponent
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointAddComponent.shake(resetFormState); //здесь был #taskEditComponent
+  }
+
+  setSaving() {
+    this.#pointAddComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  // setDeleting() {
+  //   this.#pointAddComponent.updateElement({
+  //     isDisabled: true,
+  //     isDeleting: true,
+  //   });
+  // }
+
   destroy() {
     if (this.#pointAddComponent === null) {
       return;
@@ -58,7 +83,7 @@ export default class NewPointPresenter {
       UpdateType.MINOR,
       point,
     );
-    this.destroy();
+    // this.destroy();
   };
 
   #escKeyDownHandler = (evt) => {
