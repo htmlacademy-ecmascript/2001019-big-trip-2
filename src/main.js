@@ -63,11 +63,7 @@ function handleNewPointButtonClick() {
 filterPresenter.init();
 eventPresenter.init();
 
-destinationModel.init().finally(() => {
-  offersModel.init().finally(() => {
-    pointsModel.init()
-      .finally(() => {
-        render(newPointButtonComponent, siteHeaderElement);
-      });
+Promise.all([destinationModel.init(), offersModel.init(), pointsModel.init()])
+  .finally(() => {
+    render(newPointButtonComponent, siteHeaderElement);
   });
-});
