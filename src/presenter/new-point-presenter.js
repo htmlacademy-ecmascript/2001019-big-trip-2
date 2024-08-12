@@ -1,12 +1,11 @@
-import {remove, render, RenderPosition} from '../framework/render';
-import {UserAction, UpdateType} from '../const';
-import AddNewPointFormView from '../view/add-new-point-form-view';
+import {remove, render, RenderPosition} from '../framework/render.js';
+import {UserAction, UpdateType} from '../const.js';
+import AddNewPointFormView from '../view/add-new-point-form-view.js';
 
 export default class NewPointPresenter {
   #pointListContainer = null;
   #handleDataChange = null;
   #handleDestroy = null;
-
   #pointAddComponent = null;
   #handleCancelClick = null;
   #destinations = [];
@@ -40,14 +39,14 @@ export default class NewPointPresenter {
 
   setAborting() {
     const resetFormState = () => {
-      this.#pointAddComponent.updateElement({ //здесь был #taskEditComponent
+      this.#pointAddComponent.updateElement({
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
       });
     };
 
-    this.#pointAddComponent.shake(resetFormState); //здесь был #taskEditComponent
+    this.#pointAddComponent.shake(resetFormState);
   }
 
   setSaving() {
@@ -56,13 +55,6 @@ export default class NewPointPresenter {
       isSaving: true,
     });
   }
-
-  // setDeleting() {
-  //   this.#pointAddComponent.updateElement({
-  //     isDisabled: true,
-  //     isDeleting: true,
-  //   });
-  // }
 
   destroy() {
     if (this.#pointAddComponent === null) {
@@ -83,7 +75,6 @@ export default class NewPointPresenter {
       UpdateType.MINOR,
       point,
     );
-    // this.destroy();
   };
 
   #escKeyDownHandler = (evt) => {

@@ -9,6 +9,7 @@ const DEFAULT_POINT = {
   dateTo: null,
   offers: [
   ],
+  destination: null,
   type: 'flight',
   isFavorite: false
 };
@@ -114,10 +115,7 @@ export default class AddNewPointFormView extends AbstractStatefulView {
 
   constructor({onFormSubmit, onCancelClick, destinations, offers}) {
     super();
-    const defaultPoint = {
-      ...AddNewPointFormView.parsePointToState(DEFAULT_POINT),
-      destination: destinations[0].id
-    };
+    const defaultPoint = AddNewPointFormView.parsePointToState(DEFAULT_POINT);
     this._setState(defaultPoint);
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCancelClick = onCancelClick;
@@ -133,7 +131,6 @@ export default class AddNewPointFormView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.addEventListener('submit', this.#formSubmitHandler);
-
     this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#cancelClickHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);

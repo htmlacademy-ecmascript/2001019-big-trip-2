@@ -7,11 +7,10 @@ import LoadingView from '../view/loading-view.js';
 import {filter} from '../utils/filter';
 import {sortTimeDown, sortPriceDown, sortDateDown} from '../utils/sort.js';
 import {FilterType, SortType, UpdateType, UserAction} from '../const.js';
-import {RenderPosition} from '../render';
+import {RenderPosition} from '../render.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-//удалить наноайди
 
-const TimeLimit = { //BlockerTimeLimits
+const TimeLimit = {
   LOWER_LIMIT: 350,
   UPPER_LIMIT: 1000,
 };

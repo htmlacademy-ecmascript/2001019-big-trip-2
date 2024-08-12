@@ -62,7 +62,6 @@ export default class PointPresenter {
           UpdateType.MINOR,
           data
         );
-        //this.#replaceFormToPoint();
       },
       onDeleteClick: this.#handleDeleteClick,
       destinations: this.#destinations,

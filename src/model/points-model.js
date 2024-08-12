@@ -1,5 +1,5 @@
 import Observable from '../framework/observable.js';
-import {UpdateType} from '../const';
+import {UpdateType} from '../const.js';
 
 export default class PointsModel extends Observable {
   #pointsApiService = null;
@@ -62,15 +62,6 @@ export default class PointsModel extends Observable {
     }
   }
 
-  // addPoint(updateType, update) {
-  //   this.#points = [
-  //     update,
-  //     ...this.#points,
-  //   ];
-  //
-  //   this._notify(updateType, update);
-  // }
-
   async addPoint (updateType, update) {
     try {
       const response = await this.#pointsApiService.addPoint(update);
@@ -89,12 +80,6 @@ export default class PointsModel extends Observable {
       throw new Error ('Cannot delete unexisting point');
     }
 
-    // this.#points = [
-    //   ...this.#points.slice(0, index),
-    //   ...this.#points.slice(index + 1),
-    // ];
-    //
-    // this._notify(updateType);
     try {
       await this.#pointsApiService.deletePoint(update);
       this.#points = [

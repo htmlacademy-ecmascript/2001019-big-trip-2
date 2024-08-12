@@ -44,13 +44,6 @@ const FilterType = {
   PAST: 'past',
 };
 
-const EmptyPointMessage = {
-  everything: 'Click New Event to create your first point',
-  past: 'There are no past events now',
-  present: 'There are no present events now',
-  future: 'There are no future events now',
-};
-
 const SortType = {
   DAY: 'sort-day',
   EVENT: 'sort-event',
@@ -72,4 +65,4 @@ const UpdateType = {
   INIT: 'INIT',
 };
 
-export {EVENT_TYPES, FilterType, EmptyPointMessage, SortType, UserAction, UpdateType};
+export {EVENT_TYPES, FilterType, SortType, UserAction, UpdateType};

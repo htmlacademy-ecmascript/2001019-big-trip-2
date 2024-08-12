@@ -63,7 +63,6 @@ function handleNewPointButtonClick() {
 filterPresenter.init();
 eventPresenter.init();
 
-
 destinationModel.init().finally(() => {
   offersModel.init().finally(() => {
     pointsModel.init()
