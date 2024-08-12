@@ -12,6 +12,8 @@ export default class OffersModel {
     } catch(err) {
       this.#offers = [];
     }
+
+    return this.#offers;
   }
 
   getOffers() {

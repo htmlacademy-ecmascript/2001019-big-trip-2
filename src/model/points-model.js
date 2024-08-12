@@ -19,6 +19,8 @@ export default class PointsModel extends Observable {
     }
 
     this._notify(UpdateType.INIT);
+
+    return this.#points;
   }
 
   #adaptToClient(point) {

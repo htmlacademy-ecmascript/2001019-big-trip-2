@@ -1,6 +1,7 @@
 import {remove, render} from '../framework/render';
 import TripSortView from '../view/trip-sort-view.js';
 import NoPointView from '../view/no-point-view.js';
+import FailedPointView from '../view/failed-point-view.js';
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter';
 import LoadingView from '../view/loading-view.js';
@@ -23,6 +24,7 @@ export default class EventPresenter {
   #offersModel = null;
   #tripEventListElement = null;
   #noPointComponent = null;
+  #failedPointComponent = null;
   #sortComponent = null;
   #loadingComponent = new LoadingView();
   #pointPresenters = new Map();
@@ -90,6 +92,7 @@ export default class EventPresenter {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
+    remove(this.#noPointComponent);
   }
 
   #handleModeChange = () => {
@@ -180,12 +183,18 @@ export default class EventPresenter {
     render(this.#sortComponent, this.#siteMainElement.querySelector('.trip-events__trip-sort-container'));
   }
 
-  #renderNoPointComponent() {
+  renderNoPointComponent() {
     this.#noPointComponent = new NoPointView({
       filterType: this.#filterType
     });
 
     render(this.#noPointComponent, this.#siteMainElement.querySelector('.trip-events'));
+  }
+
+  renderFailedPointComponent() {
+    this.#failedPointComponent = new FailedPointView();
+    remove(this.#noPointComponent);
+    render(this.#failedPointComponent, this.#siteMainElement.querySelector('.trip-events'));
   }
 
   #renderPoint(point) {
@@ -227,7 +236,7 @@ export default class EventPresenter {
     const pointCount = points.length;
 
     if (pointCount === 0) {
-      this.#renderNoPointComponent();
+      this.renderNoPointComponent();
       return;
     }
 
