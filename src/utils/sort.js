@@ -30,4 +30,11 @@ function sortPriceDown(pointA, pointB) {
   return weight ?? pointB.basePrice - pointA.basePrice;
 }
 
-export {sortTimeDown, sortPriceDown};
+function sortDateDown(pointA, pointB) {
+  const d1 = dayjs(pointA.dateFrom);
+  const d2 = dayjs(pointB.dateFrom);
+
+  return d1 - d2;
+}
+
+export {sortTimeDown, sortPriceDown, sortDateDown};

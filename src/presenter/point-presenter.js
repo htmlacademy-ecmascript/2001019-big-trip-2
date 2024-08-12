@@ -62,7 +62,6 @@ export default class PointPresenter {
           UpdateType.MINOR,
           data
         );
-        this.#replaceFormToPoint();
       },
       onDeleteClick: this.#handleDeleteClick,
       destinations: this.#destinations,
@@ -76,6 +75,7 @@ export default class PointPresenter {
 
     if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     if (this.#mode === Mode.EDITING) {
@@ -86,6 +86,18 @@ export default class PointPresenter {
     remove(prevPointEditComponent);
 
     return this.#pointComponent;
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
   }
 
   resetView() {
@@ -109,6 +121,24 @@ export default class PointPresenter {
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   };
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
 
   #replacePointToForm() {
     replace(this.#pointEditComponent, this.#pointComponent);
