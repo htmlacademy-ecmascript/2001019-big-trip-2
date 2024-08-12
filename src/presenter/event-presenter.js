@@ -5,12 +5,13 @@ import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter';
 import LoadingView from '../view/loading-view.js';
 import {filter} from '../utils/filter';
-import {sortTimeDown, sortPriceDown} from '../utils/sort.js';
+import {sortTimeDown, sortPriceDown, sortDateDown} from '../utils/sort.js';
 import {FilterType, SortType, UpdateType, UserAction} from '../const.js';
 import {RenderPosition} from '../render';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+//удалить наноайди
 
-const TimeLimit = {
+const TimeLimit = { //BlockerTimeLimits
   LOWER_LIMIT: 350,
   UPPER_LIMIT: 1000,
 };
@@ -64,6 +65,8 @@ export default class EventPresenter {
     const filteredPoints = filter[this.#filterType](points);
 
     switch (this.#currentSortType) {
+      case SortType.DAY:
+        return filteredPoints.sort(sortDateDown);
       case SortType.PRICE:
         return filteredPoints.sort(sortPriceDown);
       case SortType.TIME:

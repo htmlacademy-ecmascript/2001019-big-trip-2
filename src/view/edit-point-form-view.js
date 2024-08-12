@@ -57,7 +57,7 @@ function createEditPointForm(point, destinations, offers) {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input ${isDisabled ? 'disabled' : ''} class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.basePrice}">
+                    <input ${isDisabled ? 'disabled' : ''} step="1" min="0" class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.basePrice}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
@@ -67,26 +67,34 @@ function createEditPointForm(point, destinations, offers) {
                   </button>
                 </header>
                 <section class="event__details">
+                  ${(availableOffers && availableOffers.offers.length > 0) ? `
                   <section class="event__section  event__section--offers">
                   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                   <div class="event__available-offers">
-                    ${availableOffers ? availableOffers.offers.map((offerItem, offerTitle) => (`
+                    ${availableOffers.offers.map((offerItem, offerIndex) => (`
                       <div class="event__offer-selector">
-                        <input ${isDisabled ? 'disabled' : ''} class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-${offerTitle}" type="checkbox" name="${offerItem.id}"
+                        <input ${isDisabled ? 'disabled' : ''} class="event__offer-checkbox visually-hidden" id="event-offer-comfort-${offerIndex}" type="checkbox" name="${offerItem.id}"
                         ${point.offers.includes(offerItem.id) ? 'checked' : ''}>
-                        <label class="event__offer-label" for="event-offer-comfort-${offerTitle}">
+                        <label class="event__offer-label" for="event-offer-comfort-${offerIndex}">
                           <span class="event__offer-title">${offerItem.title}</span>
                           &plus;&euro;&nbsp;
                           <span class="event__offer-price">${offerItem.price}</span>
                         </label>
                       </div>
-                    `)).join('') : ''}
+                    `)).join('')}
                   </div>
-                </section>
-                <section class="event__section  event__section--destination">
-                  <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                  <p class="event__destination-description">${pointDestination ? pointDestination.description : ''}</p>
-                </section>
+                  </section>` : ''}
+                  ${(pointDestination && pointDestination.pictures.length > 0) ? `<section class="event__section  event__section--destination">
+                    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+                    <p class="event__destination-description">${pointDestination.description}</p>
+                    <div class="event__photos-container">
+                      <div class="event__photos-tape">
+                      ${pointDestination.pictures.map((destinationPhoto) => (`
+                        <img class="event__photo" src="${destinationPhoto.src}" alt="Event photo">
+                      `)).join('')}
+                      </div>
+                    </div>
+                  </section>` : ''}
               </section>
               </form>
             </li>`;

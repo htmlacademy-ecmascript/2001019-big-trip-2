@@ -5,8 +5,8 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const DEFAULT_POINT = {
   basePrice: 0,
-  dateFrom: '',
-  dateTo: '',
+  dateFrom: null,
+  dateTo: null,
   offers: [
   ],
   type: 'flight',
@@ -44,13 +44,14 @@ function createAddNewPointFormTemplate(point, destinations, offers) {
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${point.type}
                     </label>
-                    <input ${isDisabled ? 'disabled' : ''} required class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1">
+                    <input ${isDisabled ? 'disabled' : ''} required class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
+                    value="${pointDestination ? pointDestination.name : ''}" list="destination-list-1">
                     <datalist id="destination-list-1">
                     ${destinations.map((destinationItem) => (`
                       <option value="${destinationItem.name}"></option>
                     `)).join('')}
                     </datalist>
-
+                  </div>
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
                     <input ${isDisabled ? 'disabled' : ''} class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time">
@@ -63,30 +64,31 @@ function createAddNewPointFormTemplate(point, destinations, offers) {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input ${isDisabled ? 'disabled' : ''} required step="0.01" min="0" class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="">
+                    <input ${isDisabled ? 'disabled' : ''} required step="1" min="0" class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${point.basePrice}">
                   </div>
                   <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
                   <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Canceling...' : 'Cancel'}</button>
                 </header>
 
                 <section class="event__details">
+                  ${(availableOffers && availableOffers.offers.length > 0) ? `
                   <section class="event__section  event__section--offers">
                   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                   <div class="event__available-offers">
-                    ${availableOffers ? availableOffers.offers.map((offerItem, offerTitle) => (`
+                    ${availableOffers.offers.map((offerItem, offerIndex) => (`
                       <div class="event__offer-selector">
-                        <input ${isDisabled ? 'disabled' : ''} class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-${offerTitle}" type="checkbox" name="${offerItem.id}"
+                        <input ${isDisabled ? 'disabled' : ''} class="event__offer-checkbox visually-hidden" id="event-offer-comfort-${offerIndex}" type="checkbox" name="${offerItem.id}"
                         ${point.offers.includes(offerItem.id) ? 'checked' : ''}>
-                        <label class="event__offer-label" for="event-offer-comfort-${offerTitle}">
+                        <label class="event__offer-label" for="event-offer-comfort-${offerIndex}">
                           <span class="event__offer-title">${offerItem.title}</span>
                           &plus;&euro;&nbsp;
                           <span class="event__offer-price">${offerItem.price}</span>
                         </label>
                       </div>
-                    `)).join('') : ''}
+                    `)).join('')}
                   </div>
-                  </section>
-                  <section class="event__section  event__section--destination">
+                  </section>` : ''}
+                  ${(pointDestination && pointDestination.pictures.length > 0) ? `<section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${pointDestination.description}</p>
                     <div class="event__photos-container">
@@ -96,7 +98,7 @@ function createAddNewPointFormTemplate(point, destinations, offers) {
                       `)).join('')}
                       </div>
                     </div>
-                  </section>
+                  </section>` : ''}
                 </section>
               </form>
             </li>`;
@@ -185,12 +187,12 @@ export default class AddNewPointFormView extends AbstractStatefulView {
   };
 
   #dateFromCloseHandler = ([userDate]) => {
-    this._setState({...this._state, dateFrom: userDate.toISOString()});
+    this._setState({...this._state, dateFrom: userDate ? userDate.toISOString() : null});
     this.#datepickerTo.set('minDate', this._state.dateFrom);
   };
 
   #dateToCloseHandler = ([userDate]) => {
-    this._setState({...this._state, dateTo: userDate.toISOString()});
+    this._setState({...this._state, dateTo: userDate ? userDate.toISOString() : null});
     this.#datepickerFrom.set('maxDate', this._state.dateTo);
   };
 
