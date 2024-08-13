@@ -98,6 +98,7 @@ export default class PointPresenter {
     };
 
     this.#pointEditComponent.shake(resetFormState);
+    this.#pointComponent.shake(resetFormState);
   }
 
   resetView() {

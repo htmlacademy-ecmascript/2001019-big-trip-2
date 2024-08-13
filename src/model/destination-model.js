@@ -12,6 +12,8 @@ export default class DestinationModel {
     } catch(err) {
       this.#destinations = [];
     }
+
+    return this.#destinations;
   }
 
   getDestinations() {

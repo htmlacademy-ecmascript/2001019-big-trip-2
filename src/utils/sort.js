@@ -31,10 +31,7 @@ function sortPriceDown(pointA, pointB) {
 }
 
 function sortDateDown(pointA, pointB) {
-  const d1 = dayjs(pointA.dateFrom);
-  const d2 = dayjs(pointB.dateFrom);
-
-  return d1 - d2;
+  return dayjs(pointA.dateFrom) - dayjs(pointB.dateFrom);
 }
 
 export {sortTimeDown, sortPriceDown, sortDateDown};

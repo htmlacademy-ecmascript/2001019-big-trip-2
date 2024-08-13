@@ -53,6 +53,7 @@ const newPointButtonComponent = new NewPointButtonView({
 
 function handleNewPointFormClose() {
   newPointButtonComponent.element.disabled = false;
+  eventPresenter.renderNoPointComponent();
 }
 
 function handleNewPointButtonClick() {
@@ -63,11 +64,12 @@ function handleNewPointButtonClick() {
 filterPresenter.init();
 eventPresenter.init();
 
-destinationModel.init().finally(() => {
-  offersModel.init().finally(() => {
-    pointsModel.init()
-      .finally(() => {
-        render(newPointButtonComponent, siteHeaderElement);
-      });
+Promise.all([destinationModel.init(), offersModel.init(), pointsModel.init()])
+  .then((data) => {
+    if (data[0].length === 0 || data[1].length === 0 || data[2].length === 0) {
+      eventPresenter.renderFailedPointComponent();
+    }
+  })
+  .finally(() => {
+    render(newPointButtonComponent, siteHeaderElement);
   });
-});
