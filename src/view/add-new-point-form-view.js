@@ -70,7 +70,6 @@ function createAddNewPointFormTemplate(point, destinations, offers) {
                   <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
                   <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Canceling...' : 'Cancel'}</button>
                 </header>
-
                 <section class="event__details">
                   ${(availableOffers && availableOffers.offers.length > 0) ? `
                   <section class="event__section  event__section--offers">
@@ -88,17 +87,19 @@ function createAddNewPointFormTemplate(point, destinations, offers) {
                       </div>
                     `)).join('')}
                   </div>
-                  </section>` : ''}
-                  ${(pointDestination && pointDestination.pictures.length > 0) ? `<section class="event__section  event__section--destination">
+                  </section>
+                  ` : ''}
+                  ${(pointDestination && pointDestination.description) ? `<section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${pointDestination ? pointDestination.description : ''}</p>
-                    <div class="event__photos-container">
+
+                    ${pointDestination.pictures.length > 0 ? `<div class="event__photos-container">
                       <div class="event__photos-tape">
                       ${pointDestination.pictures.map((destinationPhoto) => (`
                         <img class="event__photo" src="${destinationPhoto.src}" alt="Event photo">
                       `)).join('')}
                       </div>
-                    </div>
+                    </div>` : ''}
                   </section>` : ''}
                 </section>
               </form>
@@ -149,6 +150,7 @@ export default class AddNewPointFormView extends AbstractStatefulView {
   #typeChangeHandler = (evt) => {
     this.updateElement({
       type: evt.target.value,
+      offers: [],
     });
   };
 
@@ -163,9 +165,11 @@ export default class AddNewPointFormView extends AbstractStatefulView {
     const destName = evt.target.value;
     const destination = this.#destinations.find((destItem) => destName === destItem.name);
 
-    this.updateElement({
-      destination: destination ? destination.id : null,
-    });
+    if (destination) {
+      this.updateElement({
+        destination: destination.id,
+      });
+    }
   };
 
   #offerChangeHandler = (evt) => {

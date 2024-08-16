@@ -32,7 +32,7 @@ function createEditPointForm(point, destinations, offers) {
                   </div>
 
                   <div class="event__field-group  event__field-group--destination">
-                    <label class="event__label  event__type-output" for="event-type-toggle-1">
+                    <label class="event__label  event__type-output" for="event-destination-1">
                       ${point.type}
                     </label>
                     <input ${isDisabled ? 'disabled' : ''} class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
@@ -83,19 +83,21 @@ function createEditPointForm(point, destinations, offers) {
                       </div>
                     `)).join('')}
                   </div>
-                  </section>` : ''}
-                  ${(pointDestination && pointDestination.pictures.length > 0) ? `<section class="event__section  event__section--destination">
+                  </section>
+                  ` : ''}
+                  ${(pointDestination && pointDestination.description) ? `<section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${pointDestination ? pointDestination.description : ''}</p>
-                    <div class="event__photos-container">
+
+                    ${pointDestination.pictures.length > 0 ? `<div class="event__photos-container">
                       <div class="event__photos-tape">
-                      ${pointDestination ? pointDestination.pictures.map((destinationPhoto) => (`
+                      ${pointDestination.pictures.map((destinationPhoto) => (`
                         <img class="event__photo" src="${destinationPhoto.src}" alt="Event photo">
-                      `)).join('') : ''}
+                      `)).join('')}
                       </div>
-                    </div>
+                    </div>` : ''}
                   </section>` : ''}
-              </section>
+                </section>
               </form>
             </li>`;
 }
@@ -190,15 +192,19 @@ export default class EditPointFormView extends AbstractStatefulView {
   #typeChangeHandler = (evt) => {
     this.updateElement({
       type: evt.target.value,
+      offers: [],
     });
   };
 
   #destinationChangeHandler = (evt) => {
     const destName = evt.target.value;
     const destination = this.#destinations.find((destItem) => destName === destItem.name);
-    this.updateElement({
-      destination: destination ? destination.id : null,
-    });
+
+    if (destination) {
+      this.updateElement({
+        destination: destination.id,
+      });
+    }
   };
 
   #formSubmitHandler = (evt) => {

@@ -1,9 +1,12 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createNoPointTemplate() {
+
+  const message = 'Failed to load latest route information';
+
   return (
     `<p class="trip-events__msg">
-      Failed to load latest route information
+      ${message}
     </p>`
   );
 }

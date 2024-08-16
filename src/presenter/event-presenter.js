@@ -149,6 +149,7 @@ export default class EventPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        remove(this.#failedPointComponent);
         this.#newPointPresenter = new NewPointPresenter({
           pointListContainer: this.#tripEventListElement,
           onDataChange: this.#handleViewAction,
@@ -192,9 +193,17 @@ export default class EventPresenter {
   }
 
   renderFailedPointComponent() {
-    this.#failedPointComponent = new FailedPointView();
-    remove(this.#noPointComponent);
-    render(this.#failedPointComponent, this.#siteMainElement.querySelector('.trip-events'));
+    if (this.#noPointComponent) remove(this.#noPointComponent);
+
+    if (!this.#failedPointComponent) {
+      this.#failedPointComponent = new FailedPointView();
+      render(this.#failedPointComponent, this.#siteMainElement.querySelector('.trip-events'));
+    }
+  }
+  removeFailedPointComponent() {
+    if (this.#failedPointComponent) {
+      remove(this.#failedPointComponent);
+    }
   }
 
   #renderPoint(point) {

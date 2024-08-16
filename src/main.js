@@ -58,18 +58,29 @@ function handleNewPointFormClose() {
 
 function handleNewPointButtonClick() {
   eventPresenter.createPoint();
+  eventPresenter.removeFailedPointComponent();
   newPointButtonComponent.element.disabled = true;
 }
 
 filterPresenter.init();
 eventPresenter.init();
 
-Promise.all([destinationModel.init(), offersModel.init(), pointsModel.init()])
+destinationModel.init()
   .then((data) => {
-    if (data[0].length === 0 || data[1].length === 0 || data[2].length === 0) {
-      eventPresenter.renderFailedPointComponent();
-    }
+    if (data.length === 0) eventPresenter.renderFailedPointComponent()
   })
-  .finally(() => {
-    render(newPointButtonComponent, siteHeaderElement);
+  .then(() => {
+  offersModel.init()
+    .then((data) => {
+      if (data.length === 0) eventPresenter.renderFailedPointComponent()
+    })
+    .then(() => {
+    pointsModel.init()
+      .then((data) => {
+        if (data.length === 0) eventPresenter.renderFailedPointComponent()
+      })
+      .then(() => {
+        render(newPointButtonComponent, siteHeaderElement);
+      });
   });
+});
