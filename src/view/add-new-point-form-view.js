@@ -211,7 +211,7 @@ export default class AddNewPointFormView extends AbstractStatefulView {
       datePickerStartElement,
       {
         ...commonConfig,
-        defaultDate: this._state.dateFrom, //в какой момент point превратился в _state
+        defaultDate: this._state.dateFrom,
         onClose: this.#dateFromCloseHandler,
         maxDate: this._state.dateTo
       }
