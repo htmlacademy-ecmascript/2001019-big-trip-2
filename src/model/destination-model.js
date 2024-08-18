@@ -7,13 +7,7 @@ export default class DestinationModel {
   }
 
   async init() {
-    try {
-      this.#destinations = await this.#pointsApiService.destinations;
-    } catch(err) {
-      this.#destinations = [];
-    }
-
-    return this.#destinations;
+    this.#destinations = await this.#pointsApiService.destinations;
   }
 
   getDestinations() {

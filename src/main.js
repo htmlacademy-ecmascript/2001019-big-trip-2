@@ -66,21 +66,21 @@ filterPresenter.init();
 eventPresenter.init();
 
 destinationModel.init()
-  .then((data) => {
-    if (data.length === 0) eventPresenter.renderFailedPointComponent()
-  })
   .then(() => {
-  offersModel.init()
-    .then((data) => {
-      if (data.length === 0) eventPresenter.renderFailedPointComponent()
-    })
-    .then(() => {
-    pointsModel.init()
-      .then((data) => {
-        if (data.length === 0) eventPresenter.renderFailedPointComponent()
-      })
+    offersModel.init()
       .then(() => {
-        render(newPointButtonComponent, siteHeaderElement);
+        pointsModel.init()
+          .then(() => {
+            render(newPointButtonComponent, siteHeaderElement);
+          })
+          .catch(() => {
+            eventPresenter.renderFailedPointComponent();
+          });
+      })
+      .catch(() => {
+        eventPresenter.renderFailedPointComponent();
       });
+  })
+  .catch(() => {
+    eventPresenter.renderFailedPointComponent();
   });
-});

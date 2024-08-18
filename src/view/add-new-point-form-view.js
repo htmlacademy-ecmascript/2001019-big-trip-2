@@ -68,7 +68,7 @@ function createAddNewPointFormTemplate(point, destinations, offers) {
                     <input ${isDisabled ? 'disabled' : ''} required step="1" min="0" class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${point.basePrice}">
                   </div>
                   <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
-                  <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Canceling...' : 'Cancel'}</button>
+                  <button class="event__reset-btn" type="reset">${isDeleting ? 'Canceling...' : 'Cancel'}</button>
                 </header>
                 <section class="event__details">
                   ${(availableOffers && availableOffers.offers.length > 0) ? `

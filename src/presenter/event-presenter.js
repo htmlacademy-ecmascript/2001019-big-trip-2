@@ -177,11 +177,13 @@ export default class EventPresenter {
   };
 
   #renderSort() {
-    this.#sortComponent = new TripSortView({
-      onSortTypeChange: this.#handleSortTypeChange,
-      currentSortType: this.#currentSortType,
-    });
-    render(this.#sortComponent, this.#siteMainElement.querySelector('.trip-events__trip-sort-container'));
+    if (!this.#failedPointComponent) {
+      this.#sortComponent = new TripSortView({
+        onSortTypeChange: this.#handleSortTypeChange,
+        currentSortType: this.#currentSortType,
+      });
+      render(this.#sortComponent, this.#siteMainElement.querySelector('.trip-events__trip-sort-container'));
+    }
   }
 
   renderNoPointComponent() {
@@ -193,13 +195,17 @@ export default class EventPresenter {
   }
 
   renderFailedPointComponent() {
-    if (this.#noPointComponent) remove(this.#noPointComponent);
+    remove(this.#loadingComponent);
+    if (this.#noPointComponent) {
+      remove(this.#noPointComponent);
+    }
 
     if (!this.#failedPointComponent) {
       this.#failedPointComponent = new FailedPointView();
       render(this.#failedPointComponent, this.#siteMainElement.querySelector('.trip-events'));
     }
   }
+
   removeFailedPointComponent() {
     if (this.#failedPointComponent) {
       remove(this.#failedPointComponent);
@@ -244,7 +250,7 @@ export default class EventPresenter {
     const points = this.points;
     const pointCount = points.length;
 
-    if (pointCount === 0) {
+    if (pointCount === 0 && !this.#failedPointComponent) {
       this.renderNoPointComponent();
       return;
     }

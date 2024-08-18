@@ -27,7 +27,7 @@ function formatDuration(durationMinutes) {
     days = Math.floor(durationMinutes / (60 * 24));
   }
 
-  days = days > 0 ? `${(`${(days > 9 ? days : '0' + days)}`)}D ` : '';
+  days = days > 0 ? `${(`${(days > 9 ? days : `0${ days}`)}`)}D ` : '';
   hours = `${(`00${ hours}`).slice(-2) }H `;
   minutes = `${(`00${ minutes}`).slice(-2) }M `;
 
