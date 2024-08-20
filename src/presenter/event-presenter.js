@@ -149,6 +149,7 @@ export default class EventPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        remove(this.#failedPointComponent);
         this.#newPointPresenter = new NewPointPresenter({
           pointListContainer: this.#tripEventListElement,
           onDataChange: this.#handleViewAction,
@@ -176,11 +177,13 @@ export default class EventPresenter {
   };
 
   #renderSort() {
-    this.#sortComponent = new TripSortView({
-      onSortTypeChange: this.#handleSortTypeChange,
-      currentSortType: this.#currentSortType,
-    });
-    render(this.#sortComponent, this.#siteMainElement.querySelector('.trip-events__trip-sort-container'));
+    if (!this.#failedPointComponent) {
+      this.#sortComponent = new TripSortView({
+        onSortTypeChange: this.#handleSortTypeChange,
+        currentSortType: this.#currentSortType,
+      });
+      render(this.#sortComponent, this.#siteMainElement.querySelector('.trip-events__trip-sort-container'));
+    }
   }
 
   renderNoPointComponent() {
@@ -192,9 +195,21 @@ export default class EventPresenter {
   }
 
   renderFailedPointComponent() {
-    this.#failedPointComponent = new FailedPointView();
-    remove(this.#noPointComponent);
-    render(this.#failedPointComponent, this.#siteMainElement.querySelector('.trip-events'));
+    remove(this.#loadingComponent);
+    if (this.#noPointComponent) {
+      remove(this.#noPointComponent);
+    }
+
+    if (!this.#failedPointComponent) {
+      this.#failedPointComponent = new FailedPointView();
+      render(this.#failedPointComponent, this.#siteMainElement.querySelector('.trip-events'));
+    }
+  }
+
+  removeFailedPointComponent() {
+    if (this.#failedPointComponent) {
+      remove(this.#failedPointComponent);
+    }
   }
 
   #renderPoint(point) {
@@ -235,7 +250,7 @@ export default class EventPresenter {
     const points = this.points;
     const pointCount = points.length;
 
-    if (pointCount === 0) {
+    if (pointCount === 0 && !this.#failedPointComponent) {
       this.renderNoPointComponent();
       return;
     }

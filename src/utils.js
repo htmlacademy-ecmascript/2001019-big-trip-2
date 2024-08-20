@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 const DATE_FORMAT = 'MMM D';
-const TIME_FORMAT = 'hh:mm';
+const TIME_FORMAT = 'HH:mm';
 function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
@@ -27,9 +27,9 @@ function formatDuration(durationMinutes) {
     days = Math.floor(durationMinutes / (60 * 24));
   }
 
-  days = days > 0 ? `${(`00${ days}`).slice(-2) }D ` : '';
-  hours = hours > 0 ? `${(`00${ hours}`).slice(-2) }H ` : '';
-  minutes = minutes ? `${(`00${ minutes}`).slice(-2) }M ` : '';
+  days = days > 0 ? `${(`${(days > 9 ? days : `0${ days}`)}`)}D ` : '';
+  hours = `${(`00${ hours}`).slice(-2) }H `;
+  minutes = `${(`00${ minutes}`).slice(-2) }M `;
 
   return `${days}${hours}${minutes}`;
 }
