@@ -187,6 +187,10 @@ export default class EventPresenter {
   }
 
   renderNoPointComponent() {
+    if (this.points.length > 0) {
+      return;
+    }
+
     this.#noPointComponent = new NoPointView({
       filterType: this.#filterType
     });
